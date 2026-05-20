@@ -1,32 +1,71 @@
 {% extends "base.html" %}
 
-{% block title %}Registro{% endblock %}
+{% block title %}Crear Cuenta{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-5">
-                <h2 class="text-center mb-4">Registro de Usuario</h2>
-                <form action="{{ url_for('main.registro') }}" method="POST">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="correo" class="form-label">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="correo" name="correo" required>
-                    </div>
-                    <div class="mb-4">
-                        <label for="contrasena" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="contrasena" name="contrasena" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary-custom w-100">Registrarse</button>
-                </form>
-                <div class="text-center mt-4">
-                    <p class="text-muted">¿Ya tienes cuenta? <a href="{{ url_for('main.login') }}">Inicia sesión</a></p>
-                </div>
+<div class="flex items-center justify-center min-h-[calc(100vh-200px)] py-12 px-4">
+    <div class="w-full max-w-md bg-white rounded-lg shadow-lg border border-outline-variant p-8">
+        <div class="text-center mb-8">
+            <h1 class="font-headline-lg text-2xl text-on-surface mb-2">Crear Cuenta</h1>
+            <p class="text-on-surface-variant text-label-md">Únete a TiendaPOO hoy</p>
+        </div>
+        
+        <form action="{{ url_for('main.registro') }}" method="POST" class="space-y-4">
+            <!-- Name Input -->
+            <div>
+                <label for="nombre" class="block font-label-md text-on-surface mb-2">Nombre Completo</label>
+                <input type="text" id="nombre" name="nombre" required
+                       class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container"
+                       placeholder="Juan Pérez">
             </div>
+            
+            <!-- Email Input -->
+            <div>
+                <label for="correo" class="block font-label-md text-on-surface mb-2">Correo Electrónico</label>
+                <input type="email" id="correo" name="correo" required
+                       class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container"
+                       placeholder="tu@correo.com">
+            </div>
+            
+            <!-- Password Input -->
+            <div>
+                <label for="contrasena" class="block font-label-md text-on-surface mb-2">Contraseña</label>
+                <input type="password" id="contrasena" name="contrasena" required
+                       class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container"
+                       placeholder="••••••••">
+            </div>
+            
+            <!-- Confirm Password -->
+            <div>
+                <label for="confirmar" class="block font-label-md text-on-surface mb-2">Confirmar Contraseña</label>
+                <input type="password" id="confirmar" name="confirmar" required
+                       class="w-full px-4 py-3 border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-container"
+                       placeholder="••••••••">
+            </div>
+            
+            <!-- Terms Checkbox -->
+            <label class="flex items-start gap-3 cursor-pointer mt-6">
+                <input type="checkbox" name="terminos" required class="w-4 h-4 rounded border-outline-variant mt-1">
+                <span class="text-on-surface-variant text-label-md">
+                    Acepto los <a href="#" class="text-primary hover:underline">Términos de Servicio</a> 
+                    y la <a href="#" class="text-primary hover:underline">Política de Privacidad</a>
+                </span>
+            </label>
+            
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-label-md font-bold hover:opacity-90 transition-all active:scale-95 mt-6">
+                Crear Cuenta
+            </button>
+        </form>
+        
+        <!-- Login Link -->
+        <div class="text-center mt-6 pt-6 border-t border-outline-variant">
+            <p class="text-on-surface-variant text-label-md">
+                ¿Ya tienes cuenta?
+                <a href="{{ url_for('main.login') }}" class="text-primary font-bold hover:text-primary-container transition-colors">
+                    Inicia sesión
+                </a>
+            </p>
         </div>
     </div>
 </div>

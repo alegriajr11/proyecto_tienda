@@ -1,0 +1,217 @@
+/* Custom Tailwind Utilities y Estilos */
+
+/* Ocultar scrollbar (horizontal) */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Product Card Shadow Hover */
+.product-card-shadow {
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.product-card-shadow:hover {
+    box-shadow: 0px 8px 30px rgba(0,0,0,0.1);
+}
+
+/* Slider Dot Active State */
+.slider-dot.active {
+    background-color: #c2a902 !important;
+    width: 24px;
+}
+
+/* Button Active States */
+button:active {
+    transform: scale(0.98);
+}
+
+/* Focus Ring Customization */
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none;
+    ring: 2px;
+    ring-color: #c2a902;
+}
+
+/* Form Input Styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Material Symbols Icon Sizing */
+.material-symbols-outlined {
+    font-variation-settings:
+        'FILL' 0,
+        'wght' 400,
+        'GRAD' 0,
+        'opsz' 24;
+}
+
+.material-symbols-outlined.text-xl {
+    font-size: 1.25rem;
+}
+
+.material-symbols-outlined.text-2xl {
+    font-size: 1.5rem;
+}
+
+.material-symbols-outlined.text-lg {
+    font-size: 1.125rem;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+    .font-display-lg {
+        font-size: 2rem !important;
+    }
+    
+    .font-headline-lg {
+        font-size: 1.75rem !important;
+    }
+}
+
+/* Animation Classes */
+@keyframes slide-in-from-left {
+    from {
+        opacity: 0;
+        transform: translateX(-1rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in-from-left 0.5s ease-out;
+}
+
+@keyframes bounce-in {
+    0% {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+    70% {
+        opacity: 1;
+        transform: translateY(-0.25rem);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-bounce-in {
+    animation: bounce-in 0.5s ease-out;
+}
+
+/* Utility Classes */
+.text-balance {
+    text-wrap: balance;
+}
+
+.aspect-video {
+    aspect-ratio: 16 / 9;
+}
+
+.aspect-square {
+    aspect-ratio: 1;
+}
+
+.aspect-4-3 {
+    aspect-ratio: 4 / 3;
+}
+
+/* Link Hover Effects */
+a {
+    transition: color 0.3s ease;
+}
+
+/* Badge Styling */
+.badge-category {
+    background-color: #f5f3f3;
+    color: #4b4734;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.375rem 0.875rem;
+    border-radius: 9999px;
+    display: inline-block;
+}
+
+/* Smooth Transitions */
+* {
+    transition-property: color, background-color, border-color, box-shadow;
+    transition-timing-function: ease;
+}
+
+button, a, input {
+    transition-duration: 200ms;
+}
+
+/* Notification Toast */
+.toast-notification {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 50;
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    animation: bounce-in 0.4s ease-out;
+}
+
+.toast-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.toast-error {
+    background-color: #ef4444;
+    color: white;
+}
+
+/* Max Width Container */
+.max-w-7xl {
+    max-width: 1280px;
+}
+
+.max-w-2xl {
+    max-width: 42rem;
+}
+
+/* Shadow Utilities */
+.shadow-sm {
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* Grayscale Utilities */
+.grayscale-0 {
+    filter: grayscale(0);
+}
+
+.grayscale {
+    filter: grayscale(100%);
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none;
+    }
+}

@@ -1,23 +1,124 @@
 {% extends "base.html" %}
 
-{% block title %}Carrito de Compras{% endblock %}
+{% block title %}Mi Carrito de Compras{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <h2 class="mb-4">Tu Carrito de Compras</h2>
-        
-        <div class="card shadow-sm border-0 rounded-4">
-            <div class="card-body p-5 text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-cart-x text-muted mb-3" viewBox="0 0 16 16">
-                    <path d="M7.354 5.646a.5.5 0 1 0-.708.708L7.793 7.5 6.646 8.646a.5.5 0 1 0 .708.708L8.5 8.207l1.146 1.147a.5.5 0 0 0 .708-.708L9.207 7.5l1.147-1.146a.5.5 0 0 0-.708-.708L8.5 6.793 7.354 5.646z"/>
-                    <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 4 2 2 0 0 0 0-4h7a2 2 0 1 0 0 4 2 2 0 0 0 0-4h1a.5.5 0 0 0 .491-.408l1.5-8A.5.5 0 0 0 14.5 3H2.89l-.405-1.621A.5.5 0 0 0 2 1H.5zm3.915 10L3.102 4h10.796l-1.313 7h-8.17zM6 14a1 1 0 1 1-2 0 1 1 0 0 1 2 0zm7 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                </svg>
-                <h4>Tu carrito está vacío</h4>
-                <p class="text-muted">¡Aún no has agregado ningún producto orientado a objetos!</p>
-                <a href="{{ url_for('main.index') }}" class="btn btn-primary-custom mt-3">Volver al catálogo</a>
+<div class="max-w-7xl mx-auto px-margin-desktop py-16">
+    <div class="mb-12">
+        <h1 class="font-headline-lg text-4xl text-on-surface mb-2">Tu Carrito de Compras</h1>
+        <p class="text-on-surface-variant text-body-md">Administra y revisa los productos orientados a objetos antes de finalizar tu orden.</p>
+    </div>
+
+    {% if items %}
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter items-start">
+        <!-- LISTA DE PRODUCTOS (Columna izquierda - ocupa 2 tercios) -->
+        <div class="lg:col-span-2 space-y-6">
+            {% for item in items %}
+            <article class="bg-white rounded-2xl border border-outline-variant p-6 flex flex-col sm:flex-row gap-6 shadow-sm hover:shadow-md transition-shadow">
+                <!-- Imagen del Producto -->
+                <div class="w-full sm:w-32 h-32 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
+                    <img alt="{{ item.nombre }}" class="w-full h-full object-cover" src="{{ item.imagen }}">
+                </div>
+
+                <!-- Detalles del Producto -->
+                <div class="flex-grow flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start gap-4">
+                            <h3 class="font-headline-md text-xl text-on-surface">{{ item.nombre }}</h3>
+                            <span class="font-headline-md text-lg text-primary">${{ "%.2f" | format(item.precio_venta) }}</span>
+                        </div>
+                        <p class="text-on-surface-variant text-label-md mt-1 mb-3 line-clamp-2">{{ item.descripcion }}</p>
+                    </div>
+
+                    <!-- Controles de Cantidad y Acción de Eliminar -->
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <div class="flex items-center gap-2">
+                            <span class="text-on-surface-variant text-label-md">Cantidad:</span>
+                            <span class="bg-surface-variant px-3 py-1 rounded font-bold text-on-surface text-label-md">
+                                {{ item.cantidad }}
+                            </span>
+                        </div>
+
+                        <!-- Botón Eliminar con ícono de basura -->
+                        <a href="{{ url_for('main.eliminar_del_carrito', producto_id=item.producto_id) }}" 
+                           class="text-red-500 hover:text-red-700 flex items-center gap-1 font-label-md transition-colors">
+                            <span class="material-symbols-outlined text-lg">delete</span>
+                            Eliminar
+                        </a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <!-- RESUMEN DE LA ORDEN (Columna derecha - ocupa 1 tercio) -->
+        <div class="bg-white rounded-2xl border border-outline-variant p-8 shadow-sm">
+            <h2 class="font-headline-md text-2xl text-on-surface mb-6">Resumen de Compra</h2>
+            
+            <div class="space-y-4 border-b border-outline-variant pb-6 mb-6">
+                <!-- Subtotal -->
+                <div class="flex justify-between text-body-md">
+                    <span class="text-on-surface-variant">Subtotal</span>
+                    <span class="font-bold text-on-surface">${{ "%.2f" | format(subtotal) }}</span>
+                </div>
+                
+                <!-- Envío -->
+                <div class="flex justify-between text-body-md">
+                    <span class="text-on-surface-variant">Envío</span>
+                    {% if gastos_envio == 0 %}
+                    <span class="font-bold text-green-600">Gratuito</span>
+                    {% else %}
+                    <span class="font-bold text-on-surface">${{ "%.2f" | format(gastos_envio) }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Tip informativo sobre envío gratis -->
+                {% if subtotal < 500 %}
+                <div class="bg-primary/5 border border-primary/20 rounded-xl p-3 text-xs text-on-surface-variant flex items-center gap-2 mt-2">
+                    <span class="material-symbols-outlined text-primary text-sm flex-shrink-0">info</span>
+                    <span>¡Agrega <strong>${{ "%.2f" | format(500.00 - subtotal) }}</strong> más para obtener envío **GRATIS**!</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Total General -->
+            <div class="flex justify-between items-center mb-8">
+                <span class="font-headline-md text-lg text-on-surface">Total</span>
+                <span class="font-headline-lg text-3xl text-primary">${{ "%.2f" | format(total) }}</span>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="space-y-4">
+                <!-- Proceder al Pago (Simulado) -->
+                <a href="{{ url_for('main.checkout_carrito') }}" 
+                   class="w-full bg-primary text-white py-4 rounded-xl font-headline-md text-center font-bold hover:bg-opacity-95 shadow-md block transition-all active:scale-95">
+                    Proceder al Pago
+                </a>
+                
+                <!-- Seguir Comprando -->
+                <a href="{{ url_for('main.index') }}" 
+                   class="w-full border-2 border-outline-variant text-on-surface-variant py-3 rounded-xl font-label-md text-center hover:bg-surface transition-all block">
+                    Seguir Comprando
+                </a>
             </div>
         </div>
     </div>
+
+    {% else %}
+    <!-- ESTADO VACÍO (Empty State Premium) -->
+    <div class="max-w-2xl mx-auto text-center py-20 bg-white rounded-3xl border border-outline-variant shadow-sm p-10">
+        <div class="bg-primary/10 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="material-symbols-outlined text-primary text-5xl">shopping_cart_off</span>
+        </div>
+        <h2 class="font-headline-lg text-2xl text-on-surface mb-2">Tu carrito está vacío</h2>
+        <p class="text-on-surface-variant text-body-md max-w-sm mx-auto mb-8">
+            ¡Aún no has agregado ningún producto a tu carrito de compras profesional orientado a objetos!
+        </p>
+        <a href="{{ url_for('main.index') }}" 
+           class="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-opacity-95 transition-all inline-block">
+            Volver al Catálogo
+        </a>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

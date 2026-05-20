@@ -3,70 +3,329 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda POO - {% block title %}{% endblock %}</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Tienda POO - {% block title %}Inicio{% endblock %}</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind Config Custom -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4f46e5", // Hermoso Indigo-600 profesional
+                        "primary-container": "#e0e7ff", // Indigo-100 suave
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#3730a3", // Indigo-800 contrastante
+                        "surface": "#ffffff", // Superficie blanca y limpia
+                        "surface-variant": "#f1f5f9", // Slate-100 secundario
+                        "on-surface": "#0f172a", // Slate-900 de alto contraste
+                        "on-surface-variant": "#475569", // Slate-600 suave
+                        "outline-variant": "#e2e8f0", // Slate-200 para bordes súper finos y limpios
+                        "background": "#f8fafc", // Slate-50 fondo relajante
+                        "on-background": "#0f172a",
+                    },
+                    fontFamily: {
+                        headline: ["Hanken Grotesk"],
+                        body: ["Inter"],
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "label-md": ["14px", { lineHeight: "20px", fontWeight: "500" }],
+                    },
+                    spacing: {
+                        "gutter": "24px",
+                        "margin-desktop": "64px",
+                        "stack-sm": "8px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                    },
+                },
+            },
+        };
+    </script>
+    
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-custom.css') }}">
 </head>
-<body>
+<body class="font-body bg-surface text-on-surface">
+    <!-- HEADER/NAVBAR (Rediseño Estético Ultra Profesional y Responsivo) -->
+    <header class="sticky top-0 z-50 bg-white/85 backdrop-blur-lg border-b border-outline-variant/60 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-margin-desktop h-20 flex items-center justify-between">
+            <!-- Logo con Ícono y Gradiente Estilo Startup -->
+            <div class="flex items-center">
+                <a href="{{ url_for('main.index') }}" class="flex items-center gap-3 group">
+                    <div class="bg-primary text-white p-2.5 rounded-xl shadow-md shadow-primary/20 group-hover:scale-105 transition-transform duration-300">
+                        <span class="material-symbols-outlined text-xl block align-middle font-semibold">shopping_bag</span>
+                    </div>
+                    <span class="font-headline font-bold text-2xl tracking-tight bg-gradient-to-r from-primary to-indigo-600 bg-clip-text text-transparent group-hover:opacity-90 transition-opacity">
+                        TiendaPOO
+                    </span>
+                </a>
+            </div>
+            
+            <!-- Nav Links con Efecto Hover Interactivo, Íconos Modernos e Indicadores Activos (SOLID - UX) -->
+            <nav class="hidden md:flex items-center gap-2">
+                <a href="{{ url_for('main.index') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.index') %}bg-primary/10 text-primary shadow-sm shadow-primary/5{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">storefront</span>
+                    Inicio
+                </a>
+                <a href="{{ url_for('main.carrito') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 relative {% if request.path == url_for('main.carrito') %}bg-primary/10 text-primary shadow-sm shadow-primary/5{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="relative flex items-center justify-center">
+                        <span class="material-symbols-outlined text-lg">shopping_cart</span>
+                        {% if cart_count > 0 %}
+                        <span class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm border border-white">
+                            {{ cart_count }}
+                        </span>
+                        {% endif %}
+                    </span>
+                    Carrito
+                </a>
+                <a href="{{ url_for('main.contacto') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.contacto') %}bg-primary/10 text-primary shadow-sm shadow-primary/5{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">forum</span>
+                    Contacto
+                </a>
+            </nav>
+            
+            <!-- Sección de Sesión / Botón Iniciar Sesión Moderno & Hamburguesa Móvil -->
+            <div class="flex items-center gap-3">
+                <div class="hidden md:block">
+                    {% if session.get('usuario_id') %}
+                        <!-- Chip de Perfil de Usuario Premium -->
+                        <div class="flex items-center gap-3 bg-surface-variant border border-outline-variant/60 rounded-full pl-2 pr-4 py-1.5 shadow-sm">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-sm select-none">
+                                {{ session.get('usuario_nombre')[0] | upper }}
+                            </div>
+                            <span class="text-on-surface-variant text-xs font-semibold">
+                                Hola, <strong class="text-on-surface font-bold">{{ session.get('usuario_nombre') }}</strong>
+                            </span>
+                            <div class="h-4 w-px bg-outline-variant/60"></div>
+                            <a href="{{ url_for('main.logout') }}" class="text-red-500 hover:text-red-600 text-xs font-bold uppercase tracking-wider transition-colors hover:underline flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm font-bold">logout</span>
+                                Salir
+                            </a>
+                        </div>
+                    {% else %}
+                        <!-- Botón de Inicio de Sesión con Sombra y Micro-animación de Elevación -->
+                        <a href="{{ url_for('main.login') }}" class="bg-primary text-white px-6 py-2.5 rounded-xl font-medium text-sm hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 block">
+                            Iniciar Sesión
+                        </a>
+                    {% endif %}
+                </div>
 
-    <!-- Navegación -->
-    <nav class="navbar navbar-expand-lg sticky-top">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.index') }}">TiendaPOO</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Catálogo</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.carrito') }}">Carrito</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.contacto') }}">Contacto</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.login') }}">Iniciar Sesión</a>
-                    </li>
-                </ul>
+                <!-- Botón de Menú Móvil con Badge del Carrito (Solo visible en pantallas pequeñas) -->
+                <button id="mobile-menu-btn" class="md:hidden p-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-xl transition-all duration-300 relative flex items-center justify-center">
+                    <span class="material-symbols-outlined text-2xl block">menu</span>
+                    {% if cart_count > 0 %}
+                    <span class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                        {{ cart_count }}
+                    </span>
+                    {% endif %}
+                </button>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Mensajes Flash (Ejemplo de interacciones con Flask) -->
-    <div class="container mt-3">
+    <!-- Flash Messages -->
+    <div class="max-w-7xl mx-auto px-4">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    <div class="mt-3 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
                         {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
 
-    <!-- Contenido Principal -->
-    <main class="container my-5">
-        {% block content %}
-        {% endblock %}
+    <!-- MAIN CONTENT BLOCK -->
+    <main class="min-h-screen">
+        {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <p>&copy; 2026 TiendaPOO. Proyecto Flask y POO.</p>
+    <!-- FOOTER -->
+    <footer class="border-t border-outline-variant bg-surface py-16 mt-20">
+        <div class="max-w-7xl mx-auto px-margin-desktop">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-stack-lg mb-12">
+                <!-- Columna 1: Brand -->
+                <div>
+                    <div class="font-headline-md font-bold text-primary mb-4">TiendaPOO</div>
+                    <p class="text-on-surface-variant text-label-md leading-relaxed">
+                        Elevando los estándares de tecnología digital. Productos exclusivos para profesionales exigentes.
+                    </p>
+                </div>
+                
+                <!-- Columna 2: Tienda -->
+                <div>
+                    <h4 class="font-label-md font-bold text-on-surface mb-4 uppercase">Tienda</h4>
+                    <div class="flex flex-col gap-3">
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Laptops</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Monitores</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Audio</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Accesorios</a>
+                    </div>
+                </div>
+                
+                <!-- Columna 3: Compañía -->
+                <div>
+                    <h4 class="font-label-md font-bold text-on-surface mb-4 uppercase">Compañía</h4>
+                    <div class="flex flex-col gap-3">
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Sobre Nosotros</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Carreras</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Prensa</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Contacto</a>
+                    </div>
+                </div>
+                
+                <!-- Columna 4: Soporte -->
+                <div>
+                    <h4 class="font-label-md font-bold text-on-surface mb-4 uppercase">Soporte</h4>
+                    <div class="flex flex-col gap-3">
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Preguntas Frecuentes</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Envíos</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Devoluciones</a>
+                        <a href="#" class="text-on-surface-variant hover:text-primary transition-colors text-label-md">Estado del Pedido</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Bar -->
+            <div class="pt-8 border-t border-outline-variant flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex gap-6">
+                    <a href="#" class="text-on-surface-variant hover:text-on-surface text-label-md transition-all">Términos</a>
+                    <a href="#" class="text-on-surface-variant hover:text-on-surface text-label-md transition-all">Privacidad</a>
+                    <a href="#" class="text-on-surface-variant hover:text-on-surface text-label-md transition-all">Cookies</a>
+                </div>
+                <p class="text-on-surface-variant text-label-md">
+                    © 2024 TiendaPOO - Boutique Digital. Todos los derechos reservados.
+                </p>
+            </div>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- MOBILE DRAWER (Menú Lateral Deslizable Premium - SOLID/UX) -->
+    <div id="mobile-drawer" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm opacity-0 pointer-events-none transition-all duration-300 md:hidden flex justify-end">
+        <!-- Area de clic externa para cerrar -->
+        <div class="absolute inset-0 -z-10" id="mobile-drawer-backdrop"></div>
+        
+        <!-- Contenido del Drawer -->
+        <div id="mobile-drawer-content" class="w-80 max-w-[85vw] bg-white h-full shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col p-6 border-l border-outline-variant/60">
+            <!-- Header del Drawer -->
+            <div class="flex items-center justify-between pb-5 border-b border-outline-variant/60 mb-6">
+                <div class="flex items-center gap-2">
+                    <div class="bg-primary/10 text-primary p-2 rounded-xl">
+                        <span class="material-symbols-outlined text-lg block font-semibold">shopping_bag</span>
+                    </div>
+                    <span class="font-headline font-bold text-lg text-on-surface">TiendaPOO</span>
+                </div>
+                <button id="mobile-close-btn" class="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-xl transition-all">
+                    <span class="material-symbols-outlined text-2xl block">close</span>
+                </button>
+            </div>
+
+            <!-- Links de Navegación del Drawer -->
+            <nav class="flex flex-col gap-2">
+                <a href="{{ url_for('main.index') }}" class="px-4 py-3 rounded-xl font-semibold text-base transition-all flex items-center gap-3 {% if request.path == url_for('main.index') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined">storefront</span>
+                    Inicio
+                </a>
+                <a href="{{ url_for('main.carrito') }}" class="px-4 py-3 rounded-xl font-semibold text-base transition-all flex items-center justify-between {% if request.path == url_for('main.carrito') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined">shopping_cart</span>
+                        Carrito
+                    </div>
+                    {% if cart_count > 0 %}
+                    <span class="bg-rose-500 text-white text-xs font-bold px-2.5 py-0.5 rounded-full shadow-sm">
+                        {{ cart_count }}
+                    </span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('main.contacto') }}" class="px-4 py-3 rounded-xl font-semibold text-base transition-all flex items-center gap-3 {% if request.path == url_for('main.contacto') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined">forum</span>
+                    Contacto
+                </a>
+            </nav>
+
+            <!-- Sección de Usuario / Sesión en el Drawer -->
+            <div class="mt-auto pt-6 border-t border-outline-variant/60">
+                {% if session.get('usuario_id') %}
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-3 bg-surface-variant border border-outline-variant/60 rounded-2xl px-4 py-3 shadow-sm">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-primary to-indigo-600 flex items-center justify-center text-white font-bold shadow-sm select-none">
+                                {{ session.get('usuario_nombre')[0] | upper }}
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Bienvenido/a</span>
+                                <span class="text-sm font-extrabold text-on-surface leading-tight">{{ session.get('usuario_nombre') }}</span>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('main.logout') }}" class="w-full bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center gap-2 border border-red-200">
+                            <span class="material-symbols-outlined text-lg">logout</span>
+                            Cerrar Sesión
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="{{ url_for('main.login') }}" class="w-full bg-primary text-white text-center py-4 rounded-xl font-bold text-sm hover:shadow-lg shadow-primary/20 transition-all block">
+                        Iniciar Sesión
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/tailwind-slider.js') }}"></script>
+    <script>
+        // ¡Toque de dev junior súper entusiasta! 
+        // Agregamos interactividad impecable para abrir y cerrar el menú móvil con animaciones fluidas
+        document.addEventListener('DOMContentLoaded', () => {
+            const openBtn = document.getElementById('mobile-menu-btn');
+            const closeBtn = document.getElementById('mobile-close-btn');
+            const backdrop = document.getElementById('mobile-drawer-backdrop');
+            const drawer = document.getElementById('mobile-drawer');
+            const content = document.getElementById('mobile-drawer-content');
+
+            if (openBtn && closeBtn && drawer && content) {
+                const openDrawer = () => {
+                    // Quitamos las clases que lo ocultan
+                    drawer.classList.remove('pointer-events-none', 'opacity-0');
+                    drawer.classList.add('opacity-100');
+                    // Deslizamos hacia adentro el panel lateral
+                    content.classList.remove('translate-x-full');
+                    content.classList.add('translate-x-0');
+                    // Prevenimos el scroll de la página de fondo
+                    document.body.style.overflow = 'hidden';
+                };
+
+                const closeDrawer = () => {
+                    // Ocultamos el contenedor
+                    drawer.classList.add('pointer-events-none', 'opacity-0');
+                    drawer.classList.remove('opacity-100');
+                    // Deslizamos hacia afuera el panel lateral
+                    content.classList.add('translate-x-full');
+                    content.classList.remove('translate-x-0');
+                    // Restauramos el scroll original
+                    document.body.style.overflow = '';
+                };
+
+                openBtn.addEventListener('click', openDrawer);
+                closeBtn.addEventListener('click', closeDrawer);
+                if (backdrop) {
+                    backdrop.addEventListener('click', closeDrawer);
+                }
+            }
+        });
+    </script>
 </body>
 </html>

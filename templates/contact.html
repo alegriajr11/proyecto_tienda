@@ -3,25 +3,114 @@
 {% block title %}Contacto{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card border-0 shadow-sm rounded-4">
-            <div class="card-body p-5">
-                <h2 class="text-center mb-4">Contáctanos</h2>
-                <form action="{{ url_for('main.contacto') }}" method="POST">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre Completo</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+<!-- ¡Hola! Soy el dev junior y he rediseñado la vista de Contacto (contact.html) -->
+<!-- para eliminar por completo las clases Bootstrap obsoletas y alinearlas con -->
+<!-- nuestro sistema de diseño premium Tailwind CSS y la arquitectura limpia de la tienda. -->
+<div class="max-w-7xl mx-auto px-margin-desktop py-16">
+    <div class="mb-12 text-center max-w-2xl mx-auto">
+        <span class="text-primary font-bold text-sm uppercase tracking-widest bg-primary/10 px-3.5 py-1.5 rounded-full inline-block mb-3">Estemos en Contacto</span>
+        <h1 class="font-headline-lg text-4xl text-on-surface mb-4">¿Cómo podemos ayudarte?</h1>
+        <p class="text-on-surface-variant text-body-md">
+            Si tienes dudas sobre nuestras laptops profesionales, devoluciones o la arquitectura orientada a objetos de nuestro catálogo, envíanos un mensaje. ¡Estamos listos para atenderte!
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+        <!-- Columna de Información Corporativa (4 de 12 columnas) -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-white rounded-2xl border border-outline-variant p-8 shadow-sm space-y-8">
+                <h3 class="font-headline-md text-xl text-on-surface border-b border-outline-variant pb-4">Nuestros Canales</h3>
+                
+                <!-- Teléfono -->
+                <div class="flex items-start gap-4">
+                    <div class="bg-primary/10 text-primary p-3.5 rounded-xl flex-shrink-0">
+                        <span class="material-symbols-outlined text-2xl block">call</span>
                     </div>
-                    <div class="mb-3">
-                        <label for="correo" class="form-label">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="correo" name="correo" required>
+                    <div>
+                        <h4 class="font-semibold text-on-surface text-base">Atención Telefónica</h4>
+                        <p class="text-on-surface-variant text-sm mt-1">+1 (555) 234-5678</p>
+                        <p class="text-xs text-on-surface-variant/80 mt-0.5">Lunes a Viernes: 9:00 - 18:00</p>
                     </div>
-                    <div class="mb-4">
-                        <label for="mensaje" class="form-label">Mensaje</label>
-                        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required></textarea>
+                </div>
+
+                <!-- Correo -->
+                <div class="flex items-start gap-4">
+                    <div class="bg-primary/10 text-primary p-3.5 rounded-xl flex-shrink-0">
+                        <span class="material-symbols-outlined text-2xl block">mail</span>
                     </div>
-                    <button type="submit" class="btn btn-primary-custom w-100">Enviar Mensaje</button>
+                    <div>
+                        <h4 class="font-semibold text-on-surface text-base">Soporte por Correo</h4>
+                        <p class="text-on-surface-variant text-sm mt-1">soporte@tiendapoo.com</p>
+                        <p class="text-xs text-on-surface-variant/80 mt-0.5">Respuesta garantizada en menos de 24 horas</p>
+                    </div>
+                </div>
+
+                <!-- Dirección -->
+                <div class="flex items-start gap-4">
+                    <div class="bg-primary/10 text-primary p-3.5 rounded-xl flex-shrink-0">
+                        <span class="material-symbols-outlined text-2xl block">location_on</span>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-on-surface text-base">Sede Central</h4>
+                        <p class="text-on-surface-variant text-sm mt-1">Av. Computación Orientada a Objetos 101</p>
+                        <p class="text-xs text-on-surface-variant/80 mt-0.5">Silicon Valley, CA 94025</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Caja Informativa Premium de Garantía -->
+            <div class="bg-gradient-to-tr from-primary to-indigo-700 text-white rounded-2xl p-8 shadow-md relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 opacity-10 rotate-12">
+                    <span class="material-symbols-outlined text-[150px] font-bold">verified</span>
+                </div>
+                <h4 class="font-headline font-bold text-lg mb-2">Garantía TiendaPOO</h4>
+                <p class="text-sm text-primary-container leading-relaxed">
+                    Todos nuestros dispositivos e-commerce se despachan con empaques premium y cuentan con 1 año de soporte oficial directo de fábrica.
+                </p>
+            </div>
+        </div>
+
+        <!-- Columna del Formulario de Contacto (7 de 12 columnas) -->
+        <div class="lg:col-span-7">
+            <div class="bg-white rounded-2xl border border-outline-variant p-8 shadow-sm">
+                <h3 class="font-headline-md text-2xl text-on-surface mb-6">Envíanos un mensaje directo</h3>
+                
+                <form action="{{ url_for('main.contacto') }}" method="POST" class="space-y-6">
+                    <!-- Nombre -->
+                    <div>
+                        <label for="nombre" class="block font-label-md text-on-surface mb-2">Nombre Completo</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-lg">person</span>
+                            <input type="text" id="nombre" name="nombre" required
+                                   class="w-full pl-11 pr-4 py-3.5 border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-primary transition-all text-sm"
+                                   placeholder="Ingresa tu nombre completo">
+                        </div>
+                    </div>
+                    
+                    <!-- Correo -->
+                    <div>
+                        <label for="correo" class="block font-label-md text-on-surface mb-2">Correo Electrónico</label>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/60 text-lg">alternate_email</span>
+                            <input type="email" id="correo" name="correo" required
+                                   class="w-full pl-11 pr-4 py-3.5 border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-primary transition-all text-sm"
+                                   placeholder="tu@correo.com">
+                        </div>
+                    </div>
+                    
+                    <!-- Mensaje -->
+                    <div>
+                        <label for="mensaje" class="block font-label-md text-on-surface mb-2">Mensaje o Consulta</label>
+                        <textarea id="mensaje" name="mensaje" rows="5" required
+                                  class="w-full px-4 py-3 border border-outline-variant rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-container focus:border-primary transition-all text-sm"
+                                  placeholder="¿En qué podemos ayudarte hoy? Escribe en detalle tu consulta..."></textarea>
+                    </div>
+
+                    <!-- Botón Enviar con Sombra y Micro-animación -->
+                    <button type="submit" class="w-full bg-primary text-white py-4 rounded-xl font-headline font-bold text-sm hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">send</span>
+                        Enviar Mensaje Corporativo
+                    </button>
                 </form>
             </div>
         </div>
