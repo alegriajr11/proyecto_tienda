@@ -1,0 +1,97 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    <!-- Total Productos -->
+    <div class="bg-white rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-3">
+            <div class="bg-primary/10 p-2.5 rounded-lg">
+                <span class="material-symbols-outlined text-primary text-xl">inventory_2</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Productos</span>
+        </div>
+        <p class="text-3xl font-headline font-bold text-slate-900">{{ stats.total_productos }}</p>
+        <p class="text-xs text-slate-500 mt-1">
+            <span class="text-emerald-600 font-semibold">{{ stats.productos_activos }} activos</span> · 
+            {{ stats.productos_inactivos }} inactivos
+        </p>
+    </div>
+
+    <!-- Bajo Stock -->
+    <div class="bg-white rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-3">
+            <div class="bg-amber-50 p-2.5 rounded-lg">
+                <span class="material-symbols-outlined text-amber-600 text-xl">warning</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Alertas</span>
+        </div>
+        <p class="text-3xl font-headline font-bold text-slate-900">{{ stats.bajo_stock }}</p>
+        <p class="text-xs text-slate-500 mt-1">
+            <span class="text-amber-600 font-semibold">Productos con bajo stock</span>
+        </p>
+    </div>
+
+    <!-- Categorías -->
+    <div class="bg-white rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-3">
+            <div class="bg-indigo-50 p-2.5 rounded-lg">
+                <span class="material-symbols-outlined text-indigo-600 text-xl">category</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Categorías</span>
+        </div>
+        <p class="text-3xl font-headline font-bold text-slate-900">{{ stats.total_categorias }}</p>
+        <p class="text-xs text-slate-500 mt-1">Categorías registradas</p>
+    </div>
+
+    <!-- Usuarios -->
+    <div class="bg-white rounded-xl border border-border p-5 hover:shadow-md transition-shadow">
+        <div class="flex items-center justify-between mb-3">
+            <div class="bg-emerald-50 p-2.5 rounded-lg">
+                <span class="material-symbols-outlined text-emerald-600 text-xl">group</span>
+            </div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Usuarios</span>
+        </div>
+        <p class="text-3xl font-headline font-bold text-slate-900">{{ stats.total_usuarios }}</p>
+        <p class="text-xs text-slate-500 mt-1">Usuarios registrados</p>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="bg-white rounded-xl border border-border p-6 mb-8">
+    <h2 class="text-sm font-bold text-slate-900 mb-4">Acciones Rápidas</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <a href="{{ url_for('admin.crear_producto') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all group">
+            <span class="material-symbols-outlined text-primary text-lg group-hover:scale-110 transition-transform">add_circle</span>
+            <span class="text-sm font-medium text-slate-700">Nuevo Producto</span>
+        </a>
+        <a href="{{ url_for('admin.categorias') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all group">
+            <span class="material-symbols-outlined text-primary text-lg group-hover:scale-110 transition-transform">create_new_folder</span>
+            <span class="text-sm font-medium text-slate-700">Nueva Categoría</span>
+        </a>
+        <a href="{{ url_for('admin.inventario') }}" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all group">
+            <span class="material-symbols-outlined text-primary text-lg group-hover:scale-110 transition-transform">sync</span>
+            <span class="text-sm font-medium text-slate-700">Actualizar Stock</span>
+        </a>
+        <a href="{{ url_for('main.index') }}" target="_blank" class="flex items-center gap-3 px-4 py-3 rounded-lg border border-border hover:border-primary/30 hover:bg-primary/5 transition-all group">
+            <span class="material-symbols-outlined text-primary text-lg group-hover:scale-110 transition-transform">open_in_new</span>
+            <span class="text-sm font-medium text-slate-700">Ver Tienda</span>
+        </a>
+    </div>
+</div>
+
+<!-- Info Panel -->
+<div class="bg-gradient-to-r from-primary to-indigo-600 rounded-xl p-6 text-white">
+    <div class="flex items-center gap-3 mb-2">
+        <span class="material-symbols-outlined text-2xl">shield</span>
+        <h3 class="font-headline font-bold text-lg">Panel de Administración</h3>
+    </div>
+    <p class="text-white/80 text-sm max-w-xl">
+        Desde aquí puedes gestionar todos los aspectos de tu tienda: productos, categorías, inventario y usuarios. 
+        Accede a esta ruta directamente desde <code class="bg-white/20 px-2 py-0.5 rounded text-xs font-mono">/admin</code>.
+    </p>
+</div>
+{% endblock %}

@@ -37,7 +37,8 @@
             </div>
             
             <!-- Submit Button -->
-            <button type="submit" class="w-full bg-primary-container text-on-primary-container py-3 rounded-lg font-label-md font-bold hover:opacity-90 transition-all active:scale-95">
+            <button type="submit" id="btn-login" disabled
+                    class="w-full py-3 rounded-lg font-label-md font-bold transition-all active:scale-95 bg-slate-200 text-slate-400 cursor-not-allowed">
                 Ingresar
             </button>
         </form>
@@ -53,4 +54,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const correo = document.getElementById('correo');
+        const contrasena = document.getElementById('contrasena');
+        const btn = document.getElementById('btn-login');
+
+        function verificarCampos() {
+            if (correo.value.trim() !== '' && contrasena.value.trim() !== '') {
+                btn.disabled = false;
+                btn.className = 'w-full py-3 rounded-lg font-label-md font-bold transition-all active:scale-95 bg-primary text-white hover:bg-indigo-700 shadow-md hover:shadow-lg cursor-pointer';
+            } else {
+                btn.disabled = true;
+                btn.className = 'w-full py-3 rounded-lg font-label-md font-bold transition-all active:scale-95 bg-slate-200 text-slate-400 cursor-not-allowed';
+            }
+        }
+
+        correo.addEventListener('input', verificarCampos);
+        contrasena.addEventListener('input', verificarCampos);
+    });
+</script>
 {% endblock %}

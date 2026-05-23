@@ -1,0 +1,117 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Inventario{% endblock %}
+{% block page_title %}Control de Inventario{% endblock %}
+
+{% block content %}
+<!-- Resumen rápido -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    {% set total = productos | length %}
+    {% set criticos = productos | selectattr('stock_actual') | list | selectattr('stock_actual') | list %}
+    <div class="bg-white rounded-xl border border-border p-4 flex items-center gap-3">
+        <div class="bg-emerald-50 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-emerald-600 text-lg">check_circle</span>
+        </div>
+        <div>
+            <p class="text-xs text-slate-500">Stock Normal</p>
+            <p class="text-lg font-bold text-slate-900">
+                {{ productos | selectattr('stock_actual', 'gt', 0) | list | length }}
+            </p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl border border-border p-4 flex items-center gap-3">
+        <div class="bg-amber-50 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-amber-600 text-lg">warning</span>
+        </div>
+        <div>
+            <p class="text-xs text-slate-500">Bajo Stock</p>
+            <p class="text-lg font-bold text-slate-900">
+                {{ productos | selectattr('stock_actual', 'le', 5) | selectattr('stock_actual', 'gt', 0) | list | length }}
+            </p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl border border-border p-4 flex items-center gap-3">
+        <div class="bg-red-50 p-2 rounded-lg">
+            <span class="material-symbols-outlined text-red-600 text-lg">error</span>
+        </div>
+        <div>
+            <p class="text-xs text-slate-500">Agotados</p>
+            <p class="text-lg font-bold text-slate-900">
+                {{ productos | selectattr('stock_actual', 'eq', 0) | list | length }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Inventory Table -->
+<div class="bg-white rounded-xl border border-border overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-slate-50 border-b border-border">
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Producto</th>
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Categoría</th>
+                    <th class="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Stock Actual</th>
+                    <th class="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Stock Mínimo</th>
+                    <th class="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Estado</th>
+                    <th class="text-center px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Actualizar</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+                {% for producto in productos %}
+                {% set es_critico = producto.stock_actual <= producto.stock_minimo %}
+                <tr class="hover:bg-slate-50/50 transition-colors {% if es_critico %}bg-amber-50/30{% endif %}">
+                    <td class="px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <p class="font-semibold text-slate-900 text-sm">{{ producto.nombre }}</p>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-xs text-slate-600">{{ producto.categoria_nombre or '—' }}</span>
+                    </td>
+                    <td class="px-5 py-4 text-center">
+                        <span class="text-sm font-bold {% if producto.stock_actual == 0 %}text-red-600{% elif es_critico %}text-amber-600{% else %}text-slate-900{% endif %}">
+                            {{ producto.stock_actual }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-4 text-center">
+                        <span class="text-sm text-slate-500">{{ producto.stock_minimo }}</span>
+                    </td>
+                    <td class="px-5 py-4 text-center">
+                        {% if producto.stock_actual == 0 %}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded-full">
+                            Agotado
+                        </span>
+                        {% elif es_critico %}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                            Crítico
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                            Normal
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-5 py-4">
+                        <form action="{{ url_for('admin.actualizar_stock', producto_id=producto.id) }}" method="POST" class="flex items-center justify-center gap-2">
+                            <input type="number" name="stock_actual" value="{{ producto.stock_actual }}" min="0"
+                                   class="w-20 px-2 py-1.5 rounded-lg border border-border text-center text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none">
+                            <button type="submit" class="p-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-all" title="Actualizar">
+                                <span class="material-symbols-outlined text-base">sync</span>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="px-5 py-12 text-center text-slate-400">
+                        <span class="material-symbols-outlined text-4xl mb-2 block">warehouse</span>
+                        No hay productos en inventario.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

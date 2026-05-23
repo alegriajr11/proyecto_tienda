@@ -1,0 +1,76 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Usuarios{% endblock %}
+{% block page_title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="flex items-center justify-between mb-6">
+    <p class="text-sm text-slate-500">{{ usuarios | length }} usuario{{ 's' if usuarios | length != 1 else '' }} registrado{{ 's' if usuarios | length != 1 else '' }}</p>
+</div>
+
+<!-- Users Table -->
+<div class="bg-white rounded-xl border border-border overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="bg-slate-50 border-b border-border">
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Usuario</th>
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Correo</th>
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Teléfono</th>
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Rol</th>
+                    <th class="text-left px-5 py-3 text-[11px] font-bold uppercase tracking-wider text-slate-500">Registro</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+                {% for usuario in usuarios %}
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-5 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-indigo-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                                {{ usuario.nombre[0] | upper }}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-900 text-sm">{{ usuario.nombre }} {{ usuario.apellido or '' }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-sm text-slate-600">{{ usuario.correo }}</span>
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-sm text-slate-500">{{ usuario.telefono or '—' }}</span>
+                    </td>
+                    <td class="px-5 py-4">
+                        {% if usuario.rol == 'administrador' %}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
+                            <span class="material-symbols-outlined text-xs">shield</span>
+                            Admin
+                        </span>
+                        {% elif usuario.rol == 'empleado' %}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full">
+                            Empleado
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-full">
+                            Cliente
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-5 py-4">
+                        <span class="text-xs text-slate-400">{{ usuario.fecha_registro.strftime('%d/%m/%Y') if usuario.fecha_registro else '—' }}</span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="px-5 py-12 text-center text-slate-400">
+                        <span class="material-symbols-outlined text-4xl mb-2 block">group_off</span>
+                        No hay usuarios registrados.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

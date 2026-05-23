@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - {% block title %}Panel{% endblock %} | TiendaPOO</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4f46e5",
+                        "primary-light": "#e0e7ff",
+                        "surface": "#ffffff",
+                        "surface-alt": "#f8fafc",
+                        "border": "#e2e8f0",
+                    },
+                    fontFamily: {
+                        headline: ["Hanken Grotesk"],
+                        body: ["Inter"],
+                    },
+                },
+            },
+        };
+    </script>
+</head>
+<body class="font-body bg-slate-50 text-slate-900 min-h-screen flex">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-border fixed h-full z-30 flex flex-col">
+        <!-- Logo -->
+        <div class="h-16 flex items-center px-6 border-b border-border">
+            <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2.5">
+                <div class="bg-primary text-white p-2 rounded-lg">
+                    <span class="material-symbols-outlined text-base block">admin_panel_settings</span>
+                </div>
+                <div>
+                    <span class="font-headline font-bold text-sm text-slate-900 block leading-tight">TiendaPOO</span>
+                    <span class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Admin Panel</span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-3 mb-2 block">Principal</span>
+            
+            <a href="{{ url_for('admin.dashboard') }}" 
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {% if request.endpoint == 'admin.dashboard' %}bg-primary/10 text-primary{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                <span class="material-symbols-outlined text-lg">dashboard</span>
+                Dashboard
+            </a>
+
+            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-3 mt-5 mb-2 block pt-3">Catálogo</span>
+            
+            <a href="{{ url_for('admin.productos') }}" 
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {% if 'producto' in request.endpoint %}bg-primary/10 text-primary{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                <span class="material-symbols-outlined text-lg">inventory_2</span>
+                Productos
+            </a>
+            
+            <a href="{{ url_for('admin.categorias') }}" 
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {% if 'categoria' in request.endpoint %}bg-primary/10 text-primary{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                <span class="material-symbols-outlined text-lg">category</span>
+                Categorías
+            </a>
+            
+            <a href="{{ url_for('admin.inventario') }}" 
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {% if 'inventario' in request.endpoint %}bg-primary/10 text-primary{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                <span class="material-symbols-outlined text-lg">warehouse</span>
+                Inventario
+            </a>
+
+            <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-3 mt-5 mb-2 block pt-3">Sistema</span>
+            
+            <a href="{{ url_for('admin.usuarios') }}" 
+               class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all {% if 'usuario' in request.endpoint %}bg-primary/10 text-primary{% else %}text-slate-600 hover:bg-slate-50 hover:text-slate-900{% endif %}">
+                <span class="material-symbols-outlined text-lg">group</span>
+                Usuarios
+            </a>
+        </nav>
+
+        <!-- Footer del Sidebar -->
+        <div class="p-4 border-t border-border">
+            <a href="{{ url_for('main.index') }}" class="flex items-center gap-2 text-xs text-slate-400 hover:text-primary transition-colors">
+                <span class="material-symbols-outlined text-sm">storefront</span>
+                Ver tienda
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-64">
+        <!-- Top Bar -->
+        <header class="h-16 bg-white border-b border-border sticky top-0 z-20 flex items-center justify-between px-8">
+            <div>
+                <h1 class="text-lg font-headline font-bold text-slate-900">{% block page_title %}Dashboard{% endblock %}</h1>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 bg-slate-50 border border-border rounded-full pl-3 pr-4 py-1.5">
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-primary to-indigo-600 flex items-center justify-center text-white font-bold text-xs">
+                        {{ session.get('usuario_nombre', 'A')[0] | upper }}
+                    </div>
+                    <span class="text-sm font-medium text-slate-700">{{ session.get('usuario_nombre', 'Admin') }}</span>
+                </div>
+                <a href="{{ url_for('main.logout') }}" class="p-2 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all" title="Cerrar sesión">
+                    <span class="material-symbols-outlined text-lg">logout</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Flash Messages -->
+        <div class="px-8 pt-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="mb-3 px-4 py-3 rounded-lg text-sm font-medium flex items-center gap-2
+                        {% if category == 'success' %}bg-emerald-50 text-emerald-700 border border-emerald-200
+                        {% elif category == 'danger' %}bg-red-50 text-red-700 border border-red-200
+                        {% else %}bg-amber-50 text-amber-700 border border-amber-200{% endif %}">
+                        <span class="material-symbols-outlined text-base">
+                            {% if category == 'success' %}check_circle{% elif category == 'danger' %}error{% else %}warning{% endif %}
+                        </span>
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Page Content -->
+        <main class="p-8">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

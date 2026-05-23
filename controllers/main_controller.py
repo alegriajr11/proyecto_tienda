@@ -148,8 +148,10 @@ def login():
     """
     Ruta para inicio de sesión real. Verifica contra la base de datos.
     """
-    # Si ya inició sesión, lo mandamos al catálogo directamente
+    # Si ya inició sesión, lo mandamos al destino correcto según su rol
     if 'usuario_id' in session:
+        if session.get('usuario_rol') == 'administrador':
+            return redirect(url_for('admin.dashboard'))
         return redirect(url_for('main.index'))
 
     if request.method == 'POST':
@@ -163,6 +165,7 @@ def login():
             # Iniciamos sesión real guardando datos en la sesión de Flask
             session['usuario_id'] = usuario.id
             session['usuario_nombre'] = usuario.nombre
+            session['usuario_rol'] = usuario.rol
             
             # ¡Fusión inteligente del carrito de sesión temporal con la base de datos!
             carrito_sesion = session.get('carrito', {})
@@ -175,7 +178,10 @@ def login():
                 flash(f"¡Bienvenido de nuevo, {usuario.nombre}! Hemos recuperado e importado tus productos seleccionados.", "success")
             else:
                 flash(f"¡Bienvenido de nuevo, {usuario.nombre}! Inicio de sesión exitoso.", "success")
-                
+            
+            # Redirigir según el rol del usuario
+            if usuario.rol == 'administrador':
+                return redirect(url_for('admin.dashboard'))
             return redirect(url_for('main.index'))
         else:
             flash("Correo electrónico o contraseña incorrectos. Por favor, intenta de nuevo.", "danger")
@@ -231,6 +237,7 @@ def logout():
     """
     session.pop('usuario_id', None)
     session.pop('usuario_nombre', None)
+    session.pop('usuario_rol', None)
     flash("Has cerrado tu sesión de forma segura.", "success")
     return redirect(url_for('main.index'))
 

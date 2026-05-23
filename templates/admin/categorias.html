@@ -1,0 +1,78 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Categorías{% endblock %}
+{% block page_title %}Gestión de Categorías{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Lista de Categorías -->
+    <div class="lg:col-span-2">
+        <div class="bg-white rounded-xl border border-border overflow-hidden">
+            <div class="px-5 py-4 border-b border-border flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-900">Categorías Registradas</h3>
+                <span class="text-xs text-slate-400">{{ categorias | length }} total</span>
+            </div>
+            <div class="divide-y divide-border">
+                {% for cat in categorias %}
+                <div class="px-5 py-4 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-primary/10 p-2 rounded-lg">
+                            <span class="material-symbols-outlined text-primary text-base">folder</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-900">{{ cat.nombre }}</p>
+                            <p class="text-xs text-slate-400">{{ cat.descripcion or 'Sin descripción' }}</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2.5 py-1 rounded-full">
+                            {{ cat.total_productos }} producto{{ 's' if cat.total_productos != 1 else '' }}
+                        </span>
+                        {% if cat.total_productos == 0 %}
+                        <form action="{{ url_for('admin.eliminar_categoria', categoria_id=cat.id) }}" method="POST" class="inline"
+                              onsubmit="return confirm('¿Eliminar esta categoría?')">
+                            <button type="submit" class="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="px-5 py-12 text-center text-slate-400">
+                    <span class="material-symbols-outlined text-3xl mb-2 block">folder_off</span>
+                    <p class="text-sm">No hay categorías registradas.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario Nueva Categoría -->
+    <div>
+        <div class="bg-white rounded-xl border border-border p-6">
+            <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary text-base">add_circle</span>
+                Nueva Categoría
+            </h3>
+            <form method="POST" action="{{ url_for('admin.crear_categoria') }}" class="space-y-4">
+                <div>
+                    <label for="nombre" class="block text-xs font-bold text-slate-600 mb-1.5">Nombre *</label>
+                    <input type="text" id="nombre" name="nombre" required
+                           class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                           placeholder="Ej: Electrónica">
+                </div>
+                <div>
+                    <label for="descripcion" class="block text-xs font-bold text-slate-600 mb-1.5">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="3"
+                              class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all resize-none"
+                              placeholder="Descripción breve de la categoría..."></textarea>
+                </div>
+                <button type="submit" class="w-full bg-primary hover:bg-indigo-700 text-white py-2.5 rounded-lg text-sm font-semibold transition-colors">
+                    Crear Categoría
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

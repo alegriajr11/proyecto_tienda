@@ -71,7 +71,8 @@ class UsuarioRepository:
                     id=fila['id'], 
                     nombre=fila['nombre'], 
                     correo=fila['correo'], 
-                    contrasena=fila['contrasena']
+                    contrasena=fila['contrasena'],
+                    rol=fila.get('rol', 'cliente')
                 )
                 
             cursor.close()
