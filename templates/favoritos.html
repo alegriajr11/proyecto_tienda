@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Mis Favoritos{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-margin-desktop py-16">
+    <!-- Header de la sección -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 border-b border-slate-100 pb-8">
+        <div>
+            <h1 class="font-headline-lg text-4xl text-on-surface mb-2 flex items-center gap-3">
+                <span class="material-symbols-outlined text-red-500 fill-1 text-4xl">favorite</span>
+                Mis Favoritos
+            </h1>
+            <p class="text-on-surface-variant text-body-md">Colección personalizada de tus prendas, calzado y accesorios favoritos.</p>
+        </div>
+        <a href="{{ url_for('main.index') }}" class="border border-primary text-primary px-6 py-3 rounded-xl font-semibold text-sm hover:bg-primary hover:text-white transition-all inline-block text-center self-start md:self-auto">
+            Explorar Tienda
+        </a>
+    </div>
+
+    {% if productos %}
+    <!-- Grid de Favoritos (Mismo diseño premium responsive) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for producto in productos %}
+        {% set es_ropa = producto.__class__.__name__ == 'Ropa' and not producto.talla.isdigit() %}
+        {% set es_calzado = producto.__class__.__name__ == 'Ropa' and producto.talla.isdigit() %}
+        {% set tiene_oferta = (producto.id % 2 == 0) %}
+        {% set descuento = 15 if producto.id == 2 else 20 %}
+        
+        <article class="bg-white rounded-lg border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col relative overflow-hidden focus-within:ring-2 focus-within:ring-amber-500 focus-within:outline-none" 
+                 id="product-card-{{ producto.id }}">
+            
+            <!-- BADGES Superiores -->
+            <div class="absolute top-4 left-4 right-4 z-10 flex justify-between items-center pointer-events-none">
+                <span class="bg-slate-900/90 text-white font-headline text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded shadow-sm">
+                    {% if es_ropa %}ROPA{% elif es_calzado %}CALZADO{% else %}ACCESORIOS{% endif %}
+                </span>
+                
+                <button type="button" onclick="window.location.href='{{ url_for("main.eliminar_de_favoritos", producto_id=producto.id) }}';"
+                        class="bg-white/90 hover:bg-white text-red-500 w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-transform hover:scale-110 active:scale-95 pointer-events-auto cursor-pointer"
+                        title="Quitar de favoritos" aria-label="Quitar {{ producto.nombre }} de favoritos">
+                    <span class="material-symbols-outlined text-lg fill-1">favorite</span>
+                </button>
+            </div>
+
+            <!-- Imagen del Producto -->
+            <div class="aspect-[4/3] w-full overflow-hidden bg-slate-50 relative">
+                <img alt="Fotografía de {{ producto.nombre }}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                     src="{{ producto.imagen }}"
+                     loading="lazy">
+            </div>
+            
+            <!-- Contenido de la tarjeta -->
+            <div class="p-5 flex flex-col flex-grow">
+                <!-- Marca & Stock -->
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                        {{ producto.marca or 'Zara' }}
+                    </span>
+                    
+                    <!-- Semáforo de Stock con Tooltip -->
+                    <div class="relative group/tooltip flex items-center gap-1.5 cursor-pointer">
+                        {% if producto.stock_actual > 10 %}
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 block animate-pulse"></span>
+                            <span class="text-xs text-emerald-600 font-semibold">Disponible</span>
+                        {% elif producto.stock_actual > 0 %}
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 block"></span>
+                            <span class="text-xs text-amber-600 font-semibold">Bajo Stock</span>
+                        {% else %}
+                            <span class="w-2.5 h-2.5 rounded-full bg-rose-500 block"></span>
+                            <span class="text-xs text-rose-600 font-semibold">Agotado</span>
+                        {% endif %}
+                        
+                        <!-- Tooltip -->
+                        <div class="absolute bottom-full right-0 mb-2 w-48 bg-slate-900 text-white text-[11px] rounded-lg p-2.5 opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-300 shadow-xl z-20 leading-relaxed">
+                            <strong class="block text-amber-400 mb-0.5">Inventario en vivo</strong>
+                            Stock actual: {{ producto.stock_actual }} unidades.<br>
+                            Mínimo requerido: {{ producto.stock_minimo }} unidades.
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Título -->
+                <h3 class="font-headline text-[17px] font-semibold text-slate-900 leading-snug mb-1 group-hover:text-amber-600 transition-colors">
+                    {{ producto.nombre }}
+                </h3>
+                
+                <!-- Descripción corta -->
+                <p class="text-slate-500 text-xs leading-relaxed line-clamp-2 mb-4">
+                    {{ producto.descripcion }}
+                </p>
+                
+                <!-- Rating -->
+                <div class="flex items-center gap-1.5 mb-4">
+                    <div class="flex text-amber-400">
+                        <span class="material-symbols-outlined text-[15px] fill-1 font-semibold">star</span>
+                        <span class="material-symbols-outlined text-[15px] fill-1 font-semibold">star</span>
+                        <span class="material-symbols-outlined text-[15px] fill-1 font-semibold">star</span>
+                        <span class="material-symbols-outlined text-[15px] fill-1 font-semibold">star</span>
+                        <span class="material-symbols-outlined text-[15px] {% if producto.id % 2 == 0 %}fill-1{% endif %} font-semibold">star</span>
+                    </div>
+                    <span class="text-slate-700 text-xs font-bold">{% if producto.id % 2 == 0 %}5.0{% else %}4.8{% endif %}</span>
+                    <span class="text-slate-400 text-[11px]">({% if producto.id % 2 == 0 %}38{% else %}12{% endif %} opiniones)</span>
+                </div>
+
+                <!-- Variantes (Talla y Color) -->
+                <div class="border-t border-slate-100 py-3 flex flex-wrap justify-between items-center gap-2 mb-4">
+                    <!-- Color Swatches -->
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Color</span>
+                        <div class="flex items-center gap-1.5">
+                            {% set color_hex = '#1e293b' %}
+                            {% if producto.color == 'Blanco' %}{% set color_hex = '#f8fafc' %}
+                            {% elif producto.color == 'Rojo' %}{% set color_hex = '#ef4444' %}
+                            {% elif producto.color == 'Azul' %}{% set color_hex = '#3b82f6' %}
+                            {% endif %}
+                            <span class="w-4 h-4 rounded-full border border-slate-300 block cursor-pointer ring-offset-1 ring-1 ring-slate-900" style="background-color: {{ color_hex }};" title="{{ producto.color or 'Predeterminado' }}"></span>
+                            <span class="w-4 h-4 rounded-full border border-slate-200 block cursor-pointer opacity-40 hover:opacity-100 transition-opacity" style="background-color: #d97706;" title="Mostaza"></span>
+                        </div>
+                    </div>
+
+                    <!-- Size Swatches -->
+                    <div class="flex flex-col gap-1 items-end">
+                        <span class="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Talla</span>
+                        <div class="flex items-center gap-1">
+                            {% if producto.__class__.__name__ == 'Ropa' and producto.talla %}
+                            <span class="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded cursor-pointer min-w-6 text-center select-none shadow-sm">{{ producto.talla }}</span>
+                            {% else %}
+                            <span class="text-[10px] font-bold text-slate-800 bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded cursor-pointer min-w-6 text-center select-none shadow-sm">M</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Microbadges -->
+                <div class="flex flex-wrap gap-2 mb-5">
+                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-100 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 select-none">
+                        <span class="material-symbols-outlined text-xs">local_shipping</span>
+                        Envío gratis
+                    </span>
+                </div>
+
+                <!-- Precio & CTA Compra -->
+                <div class="flex items-center justify-between border-t border-slate-100 pt-4 mt-auto">
+                    <div class="flex flex-col">
+                        {% if tiene_oferta %}
+                        {% set precio_original = (producto.precio_venta | float) / (1 - (descuento / 100)) %}
+                        <span class="text-xs text-slate-400 line-through leading-none mb-1">
+                            ${{ "%.2f" | format(precio_original) }}
+                        </span>
+                        {% endif %}
+                        <span class="font-headline text-xl font-extrabold text-slate-900 leading-none">
+                            ${{ "%.2f" | format(producto.precio_venta) }}
+                        </span>
+                    </div>
+                    
+                    <a href="{{ url_for('main.agregar_al_carrito', producto_id=producto.id) }}" 
+                       class="bg-[#d97706] hover:bg-[#b45309] text-white px-4 py-2.5 rounded-lg font-headline font-bold text-xs shadow-md hover:shadow-lg transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span class="material-symbols-outlined text-base block">shopping_cart</span>
+                        Añadir
+                    </a>
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Vacío -->
+    <div class="max-w-2xl mx-auto text-center py-20 bg-white rounded-3xl border border-slate-100 shadow-sm p-10 mt-10">
+        <div class="bg-red-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span class="material-symbols-outlined text-red-500 text-5xl">heart_broken</span>
+        </div>
+        <h2 class="font-headline-lg text-2xl text-on-surface mb-2">Tu lista de deseos está vacía</h2>
+        <p class="text-on-surface-variant text-body-md max-w-sm mx-auto mb-8">
+            ¿Viste algo que te encantó? Haz clic en el ícono del corazón de cualquier producto para guardarlo aquí de forma permanente.
+        </p>
+        <a href="{{ url_for('main.index') }}" 
+           class="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-opacity-95 transition-all inline-block cursor-pointer">
+            Ver Catálogo de Moda
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

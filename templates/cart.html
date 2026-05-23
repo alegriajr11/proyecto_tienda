@@ -89,11 +89,11 @@
 
             <!-- Botones de Acción -->
             <div class="space-y-4">
-                <!-- Proceder al Pago (Simulado) -->
-                <a href="{{ url_for('main.checkout_carrito') }}" 
-                   class="w-full bg-primary text-white py-4 rounded-xl font-headline-md text-center font-bold hover:bg-opacity-95 shadow-md block transition-all active:scale-95">
+                <!-- Proceder al Pago (Abre el Modal Premium de Pago) -->
+                <button type="button" onclick="abrirModalPago(event)" 
+                        class="w-full bg-primary text-white py-4 rounded-xl font-headline-md text-center font-bold hover:bg-opacity-95 shadow-md block transition-all active:scale-95 cursor-pointer">
                     Proceder al Pago
-                </a>
+                </button>
                 
                 <!-- Seguir Comprando -->
                 <a href="{{ url_for('main.index') }}" 
@@ -104,6 +104,257 @@
         </div>
     </div>
 
+    <!-- MODAL DE PAGO PREMIUM -->
+    <div id="modal-pago" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <!-- Backdrop translúcido premium con desenfoque glassmorphic -->
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300"></div>
+
+        <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
+            <!-- Contenido del Modal con Glassmorphism y sombras sutiles -->
+            <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-slate-100 flex flex-col max-h-[95vh] w-full">
+                
+                <!-- Cabecera del Modal -->
+                <div class="px-6 py-5 bg-gradient-to-r from-primary to-indigo-600 text-white flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <span class="material-symbols-outlined text-2xl font-bold">credit_card</span>
+                        <h3 class="text-xl font-headline font-bold leading-6" id="modal-title">Completar Pago Seguro</h3>
+                    </div>
+                    <button type="button" onclick="cerrarModalPago()" class="text-white/80 hover:text-white transition-colors" aria-label="Cerrar modal">
+                        <span class="material-symbols-outlined text-2xl block">close</span>
+                    </button>
+                </div>
+
+                <!-- Cuerpo del Modal (Scrollable) -->
+                <form action="{{ url_for('main.checkout_carrito') }}" method="POST" id="form-pago" class="flex-grow overflow-y-auto px-8 py-6 space-y-6">
+                    
+                    <!-- Resumen de Productos (Detalle de la compra) -->
+                    <div>
+                        <h4 class="text-xs uppercase font-bold tracking-wider text-primary mb-3 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm font-bold">receipt_long</span>
+                            Detalle de tu Compra
+                        </h4>
+                        <div class="bg-slate-50 rounded-xl border border-slate-100 divide-y divide-slate-100 max-h-48 overflow-y-auto">
+                            {% for item in items %}
+                            <div class="flex items-center gap-3 px-4 py-3">
+                                <div class="w-10 h-10 rounded-lg overflow-hidden bg-white border border-slate-100 flex-shrink-0">
+                                    <img alt="{{ item.nombre }}" class="w-full h-full object-cover" src="{{ item.imagen }}">
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <p class="text-sm font-semibold text-slate-800 truncate">{{ item.nombre }}</p>
+                                    <p class="text-[11px] text-slate-400">Cant: {{ item.cantidad }}</p>
+                                </div>
+                                <span class="text-sm font-bold text-slate-700 flex-shrink-0">
+                                    ${{ "%.2f" | format(item.precio_venta | float * item.cantidad | int) }}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <!-- Totales compactos -->
+                        <div class="mt-3 space-y-1.5 px-1">
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>Subtotal ({{ items | length }} artículo{{ 's' if items | length != 1 else '' }})</span>
+                                <span class="font-semibold">${{ "%.2f" | format(subtotal) }}</span>
+                            </div>
+                            <div class="flex justify-between text-xs text-slate-500">
+                                <span>Envío</span>
+                                {% if gastos_envio == 0 %}
+                                <span class="font-semibold text-emerald-600">Gratis</span>
+                                {% else %}
+                                <span class="font-semibold">${{ "%.2f" | format(gastos_envio) }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="flex justify-between text-sm font-bold text-slate-900 pt-1.5 border-t border-slate-200">
+                                <span>Total</span>
+                                <span class="text-primary">${{ "%.2f" | format(total) }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-100">
+
+                    <!-- Información de Envío -->
+                    <div>
+                        <h4 class="text-xs uppercase font-bold tracking-wider text-primary mb-3 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm font-bold">local_shipping</span>
+                            1. Detalles de Envío
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="pago_nombre" class="block text-xs font-bold text-slate-700 mb-1">Nombre Completo</label>
+                                <input type="text" id="pago_nombre" name="nombre" required 
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800"
+                                       placeholder="Juan Pérez" value="{{ session.get('usuario_nombre', '') }}">
+                            </div>
+                            <div>
+                                <label for="pago_correo" class="block text-xs font-bold text-slate-700 mb-1">Correo Electrónico</label>
+                                <input type="email" id="pago_correo" name="correo" required 
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800"
+                                       placeholder="juan@ejemplo.com">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="pago_direccion" class="block text-xs font-bold text-slate-700 mb-1">Dirección de Entrega</label>
+                                <input type="text" id="pago_direccion" name="direccion" required 
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800"
+                                       placeholder="Calle Principal #123, Colonia Centro">
+                            </div>
+                            <div>
+                                <label for="pago_ciudad" class="block text-xs font-bold text-slate-700 mb-1">Ciudad</label>
+                                <input type="text" id="pago_ciudad" name="ciudad" required 
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800"
+                                       placeholder="CDMX">
+                            </div>
+                            <div>
+                                <label for="pago_cp" class="block text-xs font-bold text-slate-700 mb-1">Código Postal</label>
+                                <input type="text" id="pago_cp" name="codigo_postal" required 
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800"
+                                       placeholder="01000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="border-slate-100">
+
+                    <!-- Información de Pago -->
+                    <div>
+                        <h4 class="text-xs uppercase font-bold tracking-wider text-primary mb-3 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-sm font-bold">payment</span>
+                            2. Detalles de Pago (Simulación)
+                        </h4>
+                        
+                        <!-- Tarjeta de crédito interactiva visual mockup -->
+                        <div class="bg-gradient-to-br from-slate-800 to-slate-950 text-white rounded-2xl p-5 mb-5 shadow-lg relative overflow-hidden flex flex-col justify-between h-40 max-w-sm mx-auto select-none">
+                            <div class="absolute right-4 top-4 bg-white/10 px-3 py-1 rounded-md text-[10px] uppercase font-bold tracking-widest backdrop-blur-md">
+                                TiendaPOO Pay
+                            </div>
+                            <div class="mt-2">
+                                <span class="material-symbols-outlined text-3xl text-amber-500 block font-semibold">contactless</span>
+                            </div>
+                            <div class="mt-2 font-mono text-base tracking-widest text-slate-100 text-center" id="card_number_display">
+                                •••• •••• •••• ••••
+                            </div>
+                            <div class="flex justify-between items-end mt-2">
+                                <div class="flex flex-col">
+                                    <span class="text-[8px] uppercase tracking-wider text-slate-400">Titular</span>
+                                    <span class="text-xs font-bold truncate max-w-[180px] tracking-wide" id="card_holder_display">JUAN PEREZ</span>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="text-[8px] uppercase tracking-wider text-slate-400">Expira</span>
+                                    <span class="text-xs font-bold" id="card_expiry_display">MM/AA</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label for="tarjeta_nombre" class="block text-xs font-bold text-slate-700 mb-1">Nombre en la Tarjeta</label>
+                                <input type="text" id="tarjeta_nombre" required 
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800"
+                                       placeholder="JUAN PEREZ" oninput="updateCardHolder(this.value)">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label for="tarjeta_numero" class="block text-xs font-bold text-slate-700 mb-1">Número de Tarjeta</label>
+                                <div class="relative">
+                                    <input type="text" id="tarjeta_numero" required maxlength="19"
+                                           class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800 font-mono"
+                                           placeholder="4111 1111 1111 1111" oninput="formatCardNumber(this)">
+                                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xl">credit_card</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="tarjeta_expira" class="block text-xs font-bold text-slate-700 mb-1">Fecha de Expiración</label>
+                                <input type="text" id="tarjeta_expira" required maxlength="5"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800 font-mono text-center"
+                                       placeholder="MM/AA" oninput="formatExpiry(this)">
+                            </div>
+                            <div>
+                                <label for="tarjeta_cvv" class="block text-xs font-bold text-slate-700 mb-1">CVV / CVC</label>
+                                <input type="password" id="tarjeta_cvv" required maxlength="4"
+                                       class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-sm text-slate-800 font-mono text-center"
+                                       placeholder="•••">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer del Modal con el Resumen Financiero y los Botones -->
+                    <div class="border-t border-slate-100 pt-5 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div class="flex flex-col text-center sm:text-left">
+                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Total a Pagar</span>
+                            <span class="text-2xl font-headline font-extrabold text-primary">${{ "%.2f" | format(total) }}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <button type="button" onclick="cerrarModalPago()" 
+                                    class="w-1/2 sm:w-auto px-6 py-3 rounded-xl border border-slate-200 text-slate-600 text-sm font-semibold hover:bg-slate-50 transition-colors cursor-pointer">
+                                Cancelar
+                            </button>
+                            <button type="submit" id="btn-submit-pago"
+                                    class="w-1/2 sm:w-auto px-8 py-3 rounded-xl bg-[#d97706] hover:bg-[#b45309] text-white text-sm font-headline font-bold shadow-md hover:shadow-lg shadow-amber-600/10 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                                <span class="material-symbols-outlined text-lg font-bold">verified</span>
+                                Confirmar y Pagar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE CONTROL DEL MODAL PREMIUM -->
+    <script>
+        function abrirModalPago(event) {
+            if (event) event.preventDefault();
+            const modal = document.getElementById('modal-pago');
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            
+            // Cargar por defecto el titular de la tarjeta si el usuario tiene sesión activa
+            const pagoNombre = document.getElementById('pago_nombre');
+            const tarjetaNombre = document.getElementById('tarjeta_nombre');
+            if (pagoNombre && pagoNombre.value) {
+                tarjetaNombre.value = pagoNombre.value.toUpperCase();
+                updateCardHolder(pagoNombre.value);
+            }
+        }
+
+        function cerrarModalPago() {
+            const modal = document.getElementById('modal-pago');
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        function updateCardHolder(val) {
+            const display = document.getElementById('card_holder_display');
+            display.textContent = val.toUpperCase().trim() || 'JUAN PEREZ';
+        }
+
+        function formatCardNumber(input) {
+            let val = input.value.replace(/\D/g, '');
+            let formatted = val.match(/.{1,4}/g);
+            input.value = formatted ? formatted.join(' ') : '';
+            
+            const display = document.getElementById('card_number_display');
+            display.textContent = input.value || '•••• •••• •••• ••••';
+        }
+
+        function formatExpiry(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length >= 2) {
+                input.value = val.substring(0, 2) + '/' + val.substring(2, 4);
+            } else {
+                input.value = val;
+            }
+            
+            const display = document.getElementById('card_expiry_display');
+            display.textContent = input.value || 'MM/AA';
+        }
+
+        // Interceptar submit para simular un loader hermoso antes de completar la compra real
+        document.getElementById('form-pago').addEventListener('submit', function(e) {
+            const btn = document.getElementById('btn-submit-pago');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-1.5"></span> Procesando...`;
+        });
+    </script>
     {% else %}
     <!-- ESTADO VACÍO (Empty State Premium) -->
     <div class="max-w-2xl mx-auto text-center py-20 bg-white rounded-3xl border border-outline-variant shadow-sm p-10">
@@ -112,7 +363,7 @@
         </div>
         <h2 class="font-headline-lg text-2xl text-on-surface mb-2">Tu carrito está vacío</h2>
         <p class="text-on-surface-variant text-body-md max-w-sm mx-auto mb-8">
-            ¡Aún no has agregado ningún producto a tu carrito de compras profesional orientado a objetos!
+            ¡Aún no has agregado ningún producto a tu carrito de compras profesional!
         </p>
         <a href="{{ url_for('main.index') }}" 
            class="bg-primary text-white px-8 py-3 rounded-full font-bold shadow-md hover:bg-opacity-95 transition-all inline-block">

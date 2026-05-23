@@ -35,14 +35,20 @@ class ProductoFactory:
         }
         
         # Instanciamos la clase hija correcta según la categoría de la base de datos
-        if 'electrónica' in categoria or 'electronica' in categoria:
-            return Electronico(
-                garantia_dias=fila.get('garantia_dias', 365),
-                **comunes
-            )
-        elif 'ropa' in categoria:
+        if 'ropa' in categoria:
             return Ropa(
                 talla=fila.get('talla', 'M'),
+                **comunes
+            )
+        elif 'calzado' in categoria:
+            # Calzado también utiliza tallas, heredando de Ropa para exponer la propiedad talla
+            return Ropa(
+                talla=fila.get('talla', '42'),
+                **comunes
+            )
+        elif 'accesorios' in categoria or 'electrónica' in categoria or 'electronica' in categoria:
+            return Electronico(
+                garantia_dias=fila.get('garantia_dias', 365),
                 **comunes
             )
         else:

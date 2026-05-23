@@ -76,29 +76,73 @@
             
             <!-- Nav Links con Efecto Hover Interactivo, Íconos Modernos e Indicadores Activos (SOLID - UX) -->
             <nav class="hidden md:flex items-center gap-2">
-                <a href="{{ url_for('main.index') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.index') %}bg-primary/10 text-primary shadow-sm shadow-primary/5{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                <!-- Dropdown de Categorías -->
+                <div class="relative group/category">
+                    <button class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path in [url_for('main.seccion_ropa'), url_for('main.seccion_calzado'), url_for('main.seccion_accesorios')] %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %} cursor-pointer">
+                        <span class="material-symbols-outlined text-lg">category</span>
+                        Categorías
+                        <span class="material-symbols-outlined text-xs group-hover/category:rotate-180 transition-transform duration-300">expand_more</span>
+                    </button>
+                    <!-- Menu Desplegable -->
+                    <div class="absolute top-full left-0 mt-1 w-56 bg-white border border-outline-variant/60 rounded-2xl shadow-xl py-2.5 opacity-0 invisible group-hover/category:opacity-100 group-hover/category:visible transition-all duration-300 z-50 transform origin-top scale-95 group-hover/category:scale-100">
+                        <a href="{{ url_for('main.index') }}" class="px-4 py-2.5 text-sm text-slate-700 hover:text-primary hover:bg-surface-variant transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-base">dashboard</span>
+                            Todos los Productos
+                        </a>
+                        <a href="{{ url_for('main.seccion_ropa') }}" class="px-4 py-2.5 text-sm text-slate-700 hover:text-primary hover:bg-surface-variant transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-base">apparel</span>
+                            Ropa y Moda
+                        </a>
+                        <a href="{{ url_for('main.seccion_calzado') }}" class="px-4 py-2.5 text-sm text-slate-700 hover:text-primary hover:bg-surface-variant transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-base">steps</span>
+                            Calzado Premium
+                        </a>
+                        <a href="{{ url_for('main.seccion_accesorios') }}" class="px-4 py-2.5 text-sm text-slate-700 hover:text-primary hover:bg-surface-variant transition-all flex items-center gap-3">
+                            <span class="material-symbols-outlined text-base">headphones</span>
+                            Accesorios y Bolsos
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tienda Completa -->
+                <a href="{{ url_for('main.index') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.index') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
                     <span class="material-symbols-outlined text-lg">storefront</span>
-                    Inicio
+                    Tienda
                 </a>
-                <a href="{{ url_for('main.carrito') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 relative {% if request.path == url_for('main.carrito') %}bg-primary/10 text-primary shadow-sm shadow-primary/5{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
-                    <span class="relative flex items-center justify-center">
-                        <span class="material-symbols-outlined text-lg">shopping_cart</span>
-                        {% if cart_count > 0 %}
-                        <span class="absolute -top-1.5 -right-1.5 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm border border-white">
-                            {{ cart_count }}
-                        </span>
-                        {% endif %}
-                    </span>
-                    Carrito
+
+                <!-- Ofertas Destacadas -->
+                <a href="{{ url_for('main.seccion_ofertas') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.seccion_ofertas') %}bg-amber-500/10 text-amber-600 shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg text-amber-500 animate-pulse">sell</span>
+                    Ofertas
                 </a>
-                <a href="{{ url_for('main.contacto') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.contacto') %}bg-primary/10 text-primary shadow-sm shadow-primary/5{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+
+                <!-- Lista de deseos (Favoritos) -->
+                <a href="{{ url_for('main.favoritos') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.favoritos') %}bg-red-50 text-red-500 shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg {% if session.get('favoritos') %}text-red-500 fill-1{% endif %}">favorite</span>
+                    Favoritos
+                </a>
+
+                <!-- Contacto -->
+                <a href="{{ url_for('main.contacto') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 flex items-center gap-2 {% if request.path == url_for('main.contacto') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
                     <span class="material-symbols-outlined text-lg">forum</span>
-                    Contacto
+                    Soporte
                 </a>
             </nav>
             
             <!-- Sección de Sesión / Botón Iniciar Sesión Moderno & Hamburguesa Móvil -->
             <div class="flex items-center gap-3">
+                <!-- Shopping Cart Icon con Badge dinámico (Lado Derecho - UX Premium) -->
+                <a href="{{ url_for('main.carrito') }}" class="hidden md:flex p-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-xl transition-all relative cursor-pointer" aria-label="Ver carrito de compras">
+                    <span class="material-symbols-outlined text-2xl">shopping_cart</span>
+                    {% if cart_count > 0 %}
+                    <span class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm border border-white">
+                        {{ cart_count }}
+                    </span>
+                    {% endif %}
+                </a>
+
+                <div class="hidden md:block w-px h-6 bg-outline-variant/60 mx-1"></div>
+
                 <div class="hidden md:block">
                     {% if session.get('usuario_id') %}
                         <!-- Chip de Perfil de Usuario Premium -->
@@ -110,7 +154,7 @@
                                 Hola, <strong class="text-on-surface font-bold">{{ session.get('usuario_nombre') }}</strong>
                             </span>
                             <div class="h-4 w-px bg-outline-variant/60"></div>
-                            <a href="{{ url_for('main.logout') }}" class="text-red-500 hover:text-red-600 text-xs font-bold uppercase tracking-wider transition-colors hover:underline flex items-center gap-1">
+                            <a href="{{ url_for('main.logout') }}" class="text-red-500 hover:text-red-600 text-xs font-bold uppercase tracking-wider transition-colors hover:underline flex items-center gap-1 cursor-pointer">
                                 <span class="material-symbols-outlined text-sm font-bold">logout</span>
                                 Salir
                             </a>
@@ -124,7 +168,7 @@
                 </div>
 
                 <!-- Botón de Menú Móvil con Badge del Carrito (Solo visible en pantallas pequeñas) -->
-                <button id="mobile-menu-btn" class="md:hidden p-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-xl transition-all duration-300 relative flex items-center justify-center">
+                <button id="mobile-menu-btn" class="md:hidden p-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-variant rounded-xl transition-all duration-300 relative flex items-center justify-center cursor-pointer">
                     <span class="material-symbols-outlined text-2xl block">menu</span>
                     {% if cart_count > 0 %}
                     <span class="absolute top-1 right-1 bg-rose-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
@@ -236,13 +280,28 @@
 
             <!-- Links de Navegación del Drawer -->
             <nav class="flex flex-col gap-2">
-                <a href="{{ url_for('main.index') }}" class="px-4 py-3 rounded-xl font-semibold text-base transition-all flex items-center gap-3 {% if request.path == url_for('main.index') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
-                    <span class="material-symbols-outlined">storefront</span>
-                    Inicio
+                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-4 mt-2 mb-1">Categorías</span>
+                <a href="{{ url_for('main.index') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-3 {% if request.path == url_for('main.index') and not request.args.get('categoria') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">dashboard</span>
+                    Todos los Productos
                 </a>
-                <a href="{{ url_for('main.carrito') }}" class="px-4 py-3 rounded-xl font-semibold text-base transition-all flex items-center justify-between {% if request.path == url_for('main.carrito') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                <a href="{{ url_for('main.seccion_ropa') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-3 {% if request.path == url_for('main.seccion_ropa') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">apparel</span>
+                    Ropa y Moda
+                </a>
+                <a href="{{ url_for('main.seccion_calzado') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-3 {% if request.path == url_for('main.seccion_calzado') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">steps</span>
+                    Calzado Premium
+                </a>
+                <a href="{{ url_for('main.seccion_accesorios') }}" class="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all flex items-center gap-3 {% if request.path == url_for('main.seccion_accesorios') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">headphones</span>
+                    Accesorios y Bolsos
+                </a>
+
+                <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-4 mt-4 mb-1">Mi Cuenta</span>
+                <a href="{{ url_for('main.carrito') }}" class="px-4 py-3 rounded-xl font-semibold text-sm transition-all flex items-center justify-between {% if request.path == url_for('main.carrito') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
                     <div class="flex items-center gap-3">
-                        <span class="material-symbols-outlined">shopping_cart</span>
+                        <span class="material-symbols-outlined text-lg">shopping_cart</span>
                         Carrito
                     </div>
                     {% if cart_count > 0 %}
@@ -251,9 +310,13 @@
                     </span>
                     {% endif %}
                 </a>
-                <a href="{{ url_for('main.contacto') }}" class="px-4 py-3 rounded-xl font-semibold text-base transition-all flex items-center gap-3 {% if request.path == url_for('main.contacto') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
-                    <span class="material-symbols-outlined">forum</span>
-                    Contacto
+                <a href="{{ url_for('main.favoritos') }}" class="px-4 py-3 rounded-xl font-semibold text-sm transition-all flex items-center gap-3 {% if request.path == url_for('main.favoritos') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg {% if session.get('favoritos') %}text-red-500 fill-1{% endif %}">favorite</span>
+                    Favoritos
+                </a>
+                <a href="{{ url_for('main.contacto') }}" class="px-4 py-3 rounded-xl font-semibold text-sm transition-all flex items-center gap-3 {% if request.path == url_for('main.contacto') %}bg-primary/10 text-primary shadow-sm{% else %}text-on-surface-variant hover:text-primary hover:bg-surface-variant{% endif %}">
+                    <span class="material-symbols-outlined text-lg">forum</span>
+                    Contacto y Soporte
                 </a>
             </nav>
 

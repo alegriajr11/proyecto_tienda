@@ -179,13 +179,19 @@ DELETE FROM categorias;
 
 -- Insertar Categorías principales
 INSERT INTO categorias (id, nombre, descripcion) VALUES
-(1, 'Electrónica', 'Dispositivos tecnológicos, laptops, auriculares, etc.'),
-(2, 'Ropa', 'Prendas de vestir exclusivas y calzado de calidad'),
-(3, 'General', 'Productos varios del catálogo general');
+(1, 'Ropa', 'Prendas de vestir exclusivas, abrigos, camisetas y moda de última tendencia.'),
+(2, 'Calzado', 'Zapatos, tenis deportivos, botas y calzado artesanal premium.'),
+(3, 'Accesorios', 'Bolsos, relojes inteligentes, auriculares y complementos exclusivos.');
 
 -- Insertar Productos semilla
 INSERT INTO productos (nombre, categoria_id, descripcion, precio_compra, precio_venta, imagen, stock_actual, stock_minimo, marca, modelo, color, talla, garantia_dias, estado) VALUES
-('Laptop ASUS ROG Strix', 1, 'Laptop gamer de alto rendimiento con procesador potente y tarjeta de video de última generación.', 800.00, 1200.00, 'https://lh3.googleusercontent.com/aida-public/AB6AXuA30YL-762rnLpfu_NwhuUo0NEiwr08VlcxZoRAnCj_09sBn0wObWEVZpEnGZcsJl4Ld60dbgRBjBfJT6kL4EKLa-6CqfikZOuNxXy1QN1knSoLKbcRTLDIkdaIbIp_sTierqzkVql8gKOk-YAIoL0RBvyzy8vXDOEAm3xpB4ZSDyyo-UnY64rOJrU_K52xIolRP2jTb0ul1CYbniFK9bGV1OjRgz_GYNOVgJOPxNryAAS7UE0f_zbf5sEV3FJNOIQ1EqUEzeDXGJM', 15, 3, 'ASUS', 'ROG Strix G15', 'Gris Eclipse', NULL, 365, 'activo'),
-('Auriculares Sony WH-1000XM4', 1, 'Auriculares inalámbricos de diadema con cancelación de ruido premium y sonido de alta resolución.', 180.00, 299.99, 'https://lh3.googleusercontent.com/aida-public/AB6AXuDtKGsfNkJ4SQV26YNDy7XlYLoV_2f0cqlQ17jD-6Dc9CzzTJRmUWHSvzxI3VAw6j8e38NAktBVRxnVt_RozfNUxfU4hmmWYal06Kdl7nJh0hP8E6w7ws19N6UWAGAec1KYZ-UBE5xgGb8Tyv6bUNGRsLdBEsVmgySc-t5OHLPqxQDBQWd18tTQyu6ESbqfyvKIydQfsa0vYXxHalYAZqgw37u8bFU-dAwl1jQSMN9IyRTqxBH1xLevfjozKJSNCRTvaAKikUSLxRA', 25, 5, 'Sony', 'WH-1000XM4', 'Negro', NULL, 180, 'activo'),
-('Chaqueta de Cuero Premium', 2, 'Chaqueta de cuero sintético estilo Biker de corte moderno, resistente al viento y muy elegante.', 45.00, 89.99, 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=600&auto=format&fit=crop', 40, 8, 'Zara', 'Biker Classic', 'Negro', 'L', NULL, 'activo'),
-('Camiseta de Algodón Orgánico', 2, 'Camiseta básica ultra suave fabricada con algodón 100% orgánico certificado y libre de químicos.', 8.00, 19.99, 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop', 100, 20, 'Levis', 'Original Tee', 'Blanco', 'M', NULL, 'activo');
+-- Ropa (ID: 1)
+('Chaqueta de Cuero Premium', 1, 'Chaqueta de cuero sintético estilo Biker de corte moderno, resistente al viento y muy elegante.', 45.00, 89.99, 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=600&auto=format&fit=crop', 40, 8, 'Zara', 'Biker Classic', 'Negro', 'L', NULL, 'activo'),
+('Camiseta de Algodón Orgánico', 1, 'Camiseta básica ultra suave fabricada con algodón 100% orgánico certificado y libre de químicos.', 8.00, 19.99, 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?q=80&w=600&auto=format&fit=crop', 100, 20, 'Levis', 'Original Tee', 'Blanco', 'M', NULL, 'activo'),
+-- Calzado (ID: 2)
+('Tenis Deportivos Urbanos', 2, 'Tenis ergonómicos con amortiguación premium, perfectos para correr o uso casual de diario.', 60.00, 129.99, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=600&auto=format&fit=crop', 25, 4, 'Nike', 'Air Max 90', 'Rojo', '42', NULL, 'activo'),
+('Botas de Cuero de Montaña', 2, 'Botas impermeables fabricadas con cuero de alta densidad y suela antideslizante para todo terreno.', 90.00, 189.99, 'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?q=80&w=600&auto=format&fit=crop', 15, 3, 'Timberland', 'Classic Boots', 'Ocre', '41', NULL, 'activo'),
+-- Accesorios (ID: 3)
+('Auriculares Inalámbricos Pro', 3, 'Auriculares inteligentes de diadema con cancelación de ruido activa premium y sonido de alta fidelidad.', 150.00, 299.99, 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop', 30, 6, 'Sony', 'WH-1000XM4', 'Negro', NULL, 180, 'activo'),
+('Reloj Inteligente Elegante', 3, 'Reloj inteligente premium con sensor de salud activo, pantalla retina y correa de silicona deportiva.', 200.00, 399.99, 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=600&auto=format&fit=crop', 20, 5, 'Apple', 'Series 9 Pro', 'Negro', NULL, 365, 'activo');
+

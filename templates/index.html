@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Catálogo de Productos{% endblock %}
+{% block title %}
+{% if categoria_activa == 'ropa' %}Ropa y Moda{% elif categoria_activa == 'calzado' %}Calzado Premium{% elif categoria_activa == 'accesorios' %}Accesorios{% elif categoria_activa == 'ofertas' %}Ofertas Especiales{% else %}Catálogo de Productos{% endif %}
+{% endblock %}
 
 {% block content %}
-<!-- PROMOTIONAL SLIDER -->
+
+{% if not categoria_activa %}
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- PROMOTIONAL SLIDER (Solo en Home / Todos los productos) -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 <section class="relative group overflow-hidden bg-on-surface h-96 md:h-[600px]">
     <div class="flex h-full transition-transform duration-700 ease-in-out overflow-hidden" id="slider">
         <!-- Slide 1 -->
@@ -48,7 +54,7 @@
     </div>
 </section>
 
-<!-- VALUE PROPOSITIONS -->
+<!-- VALUE PROPOSITIONS (Solo en Home) -->
 <section class="bg-surface-variant py-16 border-b border-outline-variant">
     <div class="max-w-7xl mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="flex items-center gap-4 group">
@@ -83,20 +89,133 @@
     </div>
 </section>
 
-<!-- FEATURED PRODUCTS SECTION -->
-<section class="py-20">
+{% else %}
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- HERO BANNER PERSONALIZADO POR CATEGORÍA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<section class="relative overflow-hidden h-64 md:h-80">
+    {% if categoria_activa == 'ropa' %}
+    <img alt="Colección de Ropa y Moda" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-rose-900/85 via-rose-800/60 to-transparent"></div>
+    {% elif categoria_activa == 'calzado' %}
+    <img alt="Colección de Calzado Premium" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=1600&q=80"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-amber-900/85 via-amber-800/60 to-transparent"></div>
+    {% elif categoria_activa == 'accesorios' %}
+    <img alt="Accesorios y Gadgets" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1600&q=80"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-indigo-900/85 via-indigo-800/60 to-transparent"></div>
+    {% elif categoria_activa == 'ofertas' %}
+    <img alt="Ofertas y Promociones" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&q=80"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-emerald-900/85 via-emerald-800/60 to-transparent"></div>
+    {% else %}
+    <img alt="Categoría" class="w-full h-full object-cover"
+         src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1600&q=80"/>
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-900/85 via-slate-800/60 to-transparent"></div>
+    {% endif %}
+
+    <div class="absolute inset-0 flex flex-col justify-center px-margin-desktop max-w-7xl mx-auto">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-white/70 text-sm mb-4">
+            <a href="{{ url_for('main.index') }}" class="hover:text-white transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">home</span>
+                Inicio
+            </a>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-white font-semibold">
+                {% if categoria_activa == 'ropa' %}Ropa y Moda
+                {% elif categoria_activa == 'calzado' %}Calzado Premium
+                {% elif categoria_activa == 'accesorios' %}Accesorios
+                {% elif categoria_activa == 'ofertas' %}Ofertas Especiales
+                {% else %}{{ categoria_activa | capitalize }}
+                {% endif %}
+            </span>
+        </nav>
+
+        <!-- Título e ícono -->
+        <div class="flex items-center gap-4 mb-3">
+            <div class="bg-white/15 backdrop-blur-sm p-3 rounded-xl">
+                <span class="material-symbols-outlined text-white text-3xl">
+                    {% if categoria_activa == 'ropa' %}apparel
+                    {% elif categoria_activa == 'calzado' %}steps
+                    {% elif categoria_activa == 'accesorios' %}headphones
+                    {% elif categoria_activa == 'ofertas' %}sell
+                    {% else %}category
+                    {% endif %}
+                </span>
+            </div>
+            <h1 class="text-white font-headline-lg text-3xl md:text-4xl leading-tight">
+                {{ titulo_seccion or categoria_activa | capitalize }}
+            </h1>
+        </div>
+
+        <p class="text-white/80 max-w-lg text-body-md leading-relaxed">
+            {{ descripcion_seccion or 'Explora nuestra selección exclusiva de productos.' }}
+        </p>
+
+        <!-- Contador de productos -->
+        <div class="mt-4 flex items-center gap-2">
+            <span class="bg-white/20 backdrop-blur-sm text-white text-sm font-semibold px-4 py-1.5 rounded-full">
+                {{ productos | length }} producto{{ 's' if productos | length != 1 else '' }}
+            </span>
+        </div>
+    </div>
+</section>
+
+<!-- CATEGORY QUICK NAV (Sub-navegación entre categorías) -->
+<section class="bg-white border-b border-outline-variant sticky top-20 z-40">
     <div class="max-w-7xl mx-auto px-margin-desktop">
+        <div class="flex items-center gap-1 overflow-x-auto py-3 scrollbar-hide">
+            <a href="{{ url_for('main.index') }}" 
+               class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all {% if not categoria_activa %}bg-primary text-white shadow-md{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                Todos
+            </a>
+            <a href="{{ url_for('main.seccion_ropa') }}" 
+               class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 {% if categoria_activa == 'ropa' %}bg-rose-600 text-white shadow-md{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                <span class="material-symbols-outlined text-base">apparel</span>
+                Ropa
+            </a>
+            <a href="{{ url_for('main.seccion_calzado') }}" 
+               class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 {% if categoria_activa == 'calzado' %}bg-amber-600 text-white shadow-md{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                <span class="material-symbols-outlined text-base">steps</span>
+                Calzado
+            </a>
+            <a href="{{ url_for('main.seccion_accesorios') }}" 
+               class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 {% if categoria_activa == 'accesorios' %}bg-indigo-600 text-white shadow-md{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                <span class="material-symbols-outlined text-base">headphones</span>
+                Accesorios
+            </a>
+            <a href="{{ url_for('main.seccion_ofertas') }}" 
+               class="px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 {% if categoria_activa == 'ofertas' %}bg-emerald-600 text-white shadow-md{% else %}text-slate-600 hover:bg-slate-100{% endif %}">
+                <span class="material-symbols-outlined text-base">sell</span>
+                Ofertas
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- FEATURED PRODUCTS SECTION -->
+<section class="py-20 animate-fade-in">
+    <div class="max-w-7xl mx-auto px-margin-desktop">
+        {% if not categoria_activa %}
         <div class="text-center mb-16">
-            <h2 class="font-headline-lg text-3xl text-on-surface mb-4">Productos Destacados</h2>
-            <p class="text-on-surface-variant max-w-2xl mx-auto">
+            <h2 class="font-headline-lg text-4xl text-on-surface mb-4">
+                Productos Destacados
+            </h2>
+            <p class="text-on-surface-variant max-w-2xl mx-auto text-body-md leading-relaxed">
                 Seleccionados minuciosamente por su rendimiento y diseño excepcional.
             </p>
         </div>
+        {% endif %}
         
         <!-- Product Grid (Responsive: Desktop 3 cols, Tablet 2 cols, Mobile 1 col - SOLID UX) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for producto in productos %}
-            {% set es_ropa = producto.__class__.__name__ == 'Ropa' %}
+            {% set es_ropa = producto.__class__.__name__ == 'Ropa' and not producto.talla.isdigit() %}
+            {% set es_calzado = producto.__class__.__name__ == 'Ropa' and producto.talla.isdigit() %}
             {% set tiene_oferta = (producto.id % 2 == 0) %}
             {% set descuento = 15 if producto.id == 2 else 20 %}
             
@@ -106,7 +225,7 @@
                 <!-- BADGES (Categoría superior + Ofertas/Stock flotante) -->
                 <div class="absolute top-4 left-4 right-4 z-10 flex justify-between items-center pointer-events-none">
                     <span class="bg-slate-900/90 text-white font-headline text-[10px] font-bold tracking-widest uppercase px-2.5 py-1 rounded shadow-sm">
-                        {% if es_ropa %}ROPA{% elif producto.__class__.__name__ == 'Electronico' %}ACCESORIOS{% else %}ZAPATOS{% endif %}
+                        {% if es_ropa %}ROPA{% elif es_calzado %}CALZADO{% else %}ACCESORIOS{% endif %}
                     </span>
                     
                     {% if tiene_oferta %}
@@ -122,23 +241,25 @@
 
                 <!-- Product Image with Aspect Ratio and Quick Action Hover Overlay -->
                 <div class="aspect-[4/3] w-full overflow-hidden bg-slate-50 relative">
-                    <img alt="Fotografía de {{ producto.nombre }}" 
-                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                         src="{{ producto.imagen }}"
-                         loading="lazy">
+                    <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}">
+                        <img alt="Fotografía de {{ producto.nombre }}" 
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="{{ producto.imagen }}"
+                             loading="lazy">
+                    </a>
                     
                     <!-- Hover Actions Overlay (Solo Desktop) -->
-                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
-                        <button class="bg-white hover:bg-slate-50 text-slate-900 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 active:scale-95"
-                                aria-label="Añadir a lista de deseos"
-                                onclick="event.preventDefault(); alert('¡Agregado a tu lista de deseos!');">
-                            <span class="material-symbols-outlined text-xl">favorite</span>
-                        </button>
-                        <button class="bg-white hover:bg-slate-50 text-slate-900 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 active:scale-95"
-                                aria-label="Vista rápida del producto"
-                                onclick="event.preventDefault(); alert('Detalle de {{ producto.nombre }}: \n\nMarca: {{ producto.marca or "Genérica" }}\nModelo: {{ producto.modelo or "Básico" }}\nPrecio: ${{ "%.2f" | format(producto.precio_venta) }}');">
+                    <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 pointer-events-none">
+                        <a href="{{ url_for('main.agregar_a_favoritos', producto_id=producto.id) }}" 
+                           class="bg-white hover:bg-slate-50 text-slate-900 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 active:scale-95 pointer-events-auto"
+                           aria-label="Añadir {{ producto.nombre }} a tus favoritos">
+                            <span class="material-symbols-outlined text-xl {% if producto.id in session.get('favoritos', []) %}text-red-500 fill-1{% endif %}">favorite</span>
+                        </a>
+                        <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}" 
+                           class="bg-white hover:bg-slate-50 text-slate-900 w-11 h-11 rounded-full flex items-center justify-center shadow-lg transition-transform duration-300 hover:scale-110 active:scale-95 pointer-events-auto"
+                           aria-label="Ver detalle de {{ producto.nombre }}">
                             <span class="material-symbols-outlined text-xl">visibility</span>
-                        </button>
+                        </a>
                     </div>
                 </div>
                 
@@ -174,7 +295,9 @@
                     
                     <!-- Product Title -->
                     <h3 class="font-headline text-[17px] font-semibold text-slate-900 leading-snug mb-1 group-hover:text-amber-600 transition-colors">
-                        {{ producto.nombre }}
+                        <a href="{{ url_for('main.detalle_producto', producto_id=producto.id) }}" class="hover:underline">
+                            {{ producto.nombre }}
+                        </a>
                     </h3>
                     
                     <!-- Short Description -->
@@ -226,22 +349,7 @@
                         </div>
                     </div>
 
-                    <!-- Collapsible Diagnostic POO Details (Reducción de Ruido) -->
-                    <div class="border-t border-slate-100 pt-3 mb-4">
-                        <details class="group/details text-[11px] text-slate-500 cursor-pointer">
-                            <summary class="flex justify-between items-center font-semibold text-slate-600 hover:text-primary transition-colors select-none py-1">
-                                <span class="flex items-center gap-1.5">
-                                    <span class="material-symbols-outlined text-sm">terminal</span>
-                                    Diagnóstico Polimorfismo POO
-                                </span>
-                                <span class="material-symbols-outlined text-sm group-open/details:rotate-180 transition-transform">expand_more</span>
-                            </summary>
-                            <div class="bg-slate-50 border border-slate-100 rounded-lg p-2.5 mt-2 text-[10px] font-mono leading-relaxed text-slate-600 shadow-inner">
-                                <div class="mb-1 text-primary-container text-amber-600 font-bold">Clase: {{ producto.__class__.__name__ }}</div>
-                                {{ producto.mostrar_info() }}
-                            </div>
-                        </details>
-                    </div>
+
 
                     <!-- Microbadges (Envío gratis, Garantía) -->
                     <div class="flex flex-wrap gap-2 mb-5">
@@ -289,15 +397,26 @@
         </div>
         
         <!-- View All Button -->
+        {% if not categoria_activa %}
         <div class="mt-16 text-center">
             <a href="{{ url_for('main.index') }}" class="border-2 border-primary text-primary px-8 py-3 rounded font-label-md hover:bg-primary hover:text-white transition-all inline-block">
                 Ver todos los productos
             </a>
         </div>
+        {% else %}
+        <!-- Botón de regreso al catálogo completo -->
+        <div class="mt-16 text-center">
+            <a href="{{ url_for('main.index') }}" class="border-2 border-slate-300 text-slate-600 px-8 py-3 rounded-lg font-label-md hover:bg-slate-50 transition-all inline-flex items-center gap-2">
+                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                Volver al catálogo completo
+            </a>
+        </div>
+        {% endif %}
     </div>
 </section>
 
-<!-- NEWSLETTER SECTION -->
+<!-- NEWSLETTER SECTION (Solo en Home) -->
+{% if not categoria_activa %}
 <section class="bg-on-surface py-16">
     <div class="max-w-2xl mx-auto px-margin-desktop text-center">
         <h2 class="font-headline-lg text-white mb-4">Únete a nuestra élite tecnológica</h2>
@@ -312,4 +431,5 @@
         </form>
     </div>
 </section>
+{% endif %}
 {% endblock %}
