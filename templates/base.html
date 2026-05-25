@@ -181,11 +181,11 @@
     </header>
 
     <!-- Flash Messages -->
-    <div class="max-w-7xl mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-4" id="flash-container">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="mt-3 p-4 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                    <div class="flash-msg mt-3 p-4 rounded-lg transition-all duration-500 {% if category == 'success' %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -350,8 +350,21 @@
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/tailwind-slider.js') }}"></script>
     <script>
-        // ¡Toque de dev junior súper entusiasta! 
-        // Agregamos interactividad impecable para abrir y cerrar el menú móvil con animaciones fluidas
+        // Auto-ocultar flash messages después de 3 segundos
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMsgs = document.querySelectorAll('.flash-msg');
+            if (flashMsgs.length > 0) {
+                setTimeout(function() {
+                    flashMsgs.forEach(function(msg) {
+                        msg.style.opacity = '0';
+                        msg.style.transform = 'translateY(-10px)';
+                        setTimeout(function() { msg.remove(); }, 500);
+                    });
+                }, 3000);
+            }
+        });
+
+        // Menú móvil
         document.addEventListener('DOMContentLoaded', () => {
             const openBtn = document.getElementById('mobile-menu-btn');
             const closeBtn = document.getElementById('mobile-close-btn');

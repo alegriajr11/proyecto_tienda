@@ -17,6 +17,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from models.producto_repository import ProductoRepository
 from models.usuario_repository import UsuarioRepository
 from models.carrito_repository import CarritoRepository
+from models.slide_repository import SlideRepository
 
 def login_required(f):
     """
@@ -39,6 +40,7 @@ main = Blueprint('main', __name__)
 producto_repo = ProductoRepository()
 usuario_repo = UsuarioRepository()
 carrito_repo = CarritoRepository()
+slide_repo = SlideRepository()
 
 @main.context_processor
 def inject_cart_count():
@@ -102,13 +104,17 @@ def index():
             categoria_filtro = None
     else:
         productos = todos
-        
+    
+    # Cargar slides dinámicos solo para el home (sin categoría activa)
+    slides = slide_repo.obtener_activos() if not categoria_filtro else []
+    
     return render_template(
         'index.html', 
         productos=productos, 
         categoria_activa=categoria_filtro,
         titulo_seccion=titulo_seccion,
-        descripcion_seccion=descripcion_seccion
+        descripcion_seccion=descripcion_seccion,
+        slides=slides
     )
 
 @main.route('/producto/<int:producto_id>')

@@ -10,6 +10,7 @@ from functools import wraps
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from models.producto_repository import ProductoRepository
 from models.usuario_repository import UsuarioRepository
+from models.slide_repository import SlideRepository
 from models.database import Database
 
 # Blueprint separado con prefijo /admin
@@ -18,6 +19,7 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 # Repositorios
 producto_repo = ProductoRepository()
 usuario_repo = UsuarioRepository()
+slide_repo = SlideRepository()
 db = Database()
 
 
@@ -412,3 +414,86 @@ def usuarios():
             conn.close()
     
     return render_template('admin/usuarios.html', usuarios=usuarios)
+
+
+# ═══════════════════════════════════════════════════════════════════
+# GESTIÓN DE SLIDES DEL BANNER PROMOCIONAL
+# ═══════════════════════════════════════════════════════════════════
+
+@admin.route('/slides')
+@admin_required
+def slides():
+    """Lista todos los slides del banner promocional."""
+    todos_slides = slide_repo.obtener_todos()
+    return render_template('admin/slides.html', slides=todos_slides)
+
+
+@admin.route('/slides/crear', methods=['GET', 'POST'])
+@admin_required
+def crear_slide():
+    """Formulario para crear un nuevo slide."""
+    if request.method == 'POST':
+        datos = {
+            'titulo': request.form.get('titulo'),
+            'subtitulo': request.form.get('subtitulo'),
+            'imagen_url': request.form.get('imagen_url'),
+            'texto_boton': request.form.get('texto_boton') or 'Ver Catálogo',
+            'enlace_boton': request.form.get('enlace_boton') or '/',
+            'posicion_texto': request.form.get('posicion_texto', 'izquierda'),
+            'orden': request.form.get('orden') or 0,
+            'activo': request.form.get('activo') == 'on'
+        }
+        
+        exito = slide_repo.crear(datos, usuario_id=session.get('usuario_id'))
+        if exito:
+            flash("Slide creado exitosamente.", "success")
+            return redirect(url_for('admin.slides'))
+        else:
+            flash("Error al crear el slide.", "danger")
+    
+    return render_template('admin/slide_form.html', slide=None)
+
+
+@admin.route('/slides/editar/<int:slide_id>', methods=['GET', 'POST'])
+@admin_required
+def editar_slide(slide_id):
+    """Formulario para editar un slide existente."""
+    slide = slide_repo.obtener_por_id(slide_id)
+    
+    if not slide:
+        flash("Slide no encontrado.", "danger")
+        return redirect(url_for('admin.slides'))
+    
+    if request.method == 'POST':
+        datos = {
+            'titulo': request.form.get('titulo'),
+            'subtitulo': request.form.get('subtitulo'),
+            'imagen_url': request.form.get('imagen_url'),
+            'texto_boton': request.form.get('texto_boton') or 'Ver Catálogo',
+            'enlace_boton': request.form.get('enlace_boton') or '/',
+            'posicion_texto': request.form.get('posicion_texto', 'izquierda'),
+            'orden': request.form.get('orden') or 0,
+            'activo': request.form.get('activo') == 'on'
+        }
+        
+        exito = slide_repo.actualizar(slide_id, datos)
+        if exito:
+            flash("Slide actualizado exitosamente.", "success")
+            return redirect(url_for('admin.slides'))
+        else:
+            flash("Error al actualizar el slide.", "danger")
+    
+    return render_template('admin/slide_form.html', slide=slide)
+
+
+@admin.route('/slides/eliminar/<int:slide_id>', methods=['POST'])
+@admin_required
+def eliminar_slide(slide_id):
+    """Elimina un slide permanentemente."""
+    exito = slide_repo.eliminar(slide_id)
+    if exito:
+        flash("Slide eliminado exitosamente.", "success")
+    else:
+        flash("Error al eliminar el slide.", "danger")
+    
+    return redirect(url_for('admin.slides'))

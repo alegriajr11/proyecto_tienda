@@ -169,6 +169,23 @@ CREATE TABLE IF NOT EXISTS lista_deseos (
     UNIQUE KEY unique_usuario_producto_deseos (usuario_id, producto_id)
 );
 
+-- Tabla de Slides del Banner Promocional
+CREATE TABLE IF NOT EXISTS slides (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(200) NOT NULL,
+    subtitulo VARCHAR(200),
+    imagen_url TEXT NOT NULL,
+    texto_boton VARCHAR(100) DEFAULT 'Ver Catálogo',
+    enlace_boton VARCHAR(255) DEFAULT '/',
+    posicion_texto ENUM('izquierda', 'derecha', 'centro') DEFAULT 'izquierda',
+    orden INT DEFAULT 0,
+    activo BOOLEAN DEFAULT TRUE,
+    creado_por INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (creado_por) REFERENCES usuarios(id) ON DELETE SET NULL
+);
+
 -- =========================================================================
 -- DATOS SEMILLA (Para pruebas de la tienda con la estructura profesional)
 -- =========================================================================

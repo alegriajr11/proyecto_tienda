@@ -1,0 +1,178 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}{% if slide %}Editar{% else %}Crear{% endif %} Slide{% endblock %}
+{% block page_title %}{% if slide %}Editar Slide{% else %}Nuevo Slide{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="flex items-center gap-2 text-sm text-slate-500 mb-6">
+    <a href="{{ url_for('admin.slides') }}" class="hover:text-primary transition-colors">Banner / Slides</a>
+    <span class="material-symbols-outlined text-xs">chevron_right</span>
+    <span class="text-slate-900 font-medium">{% if slide %}{{ slide.titulo }}{% else %}Nuevo Slide{% endif %}</span>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Formulario -->
+    <div class="lg:col-span-2">
+        <form method="POST" class="space-y-6" id="slide-form">
+            <!-- Contenido del Slide -->
+            <div class="bg-white rounded-xl border border-border p-6">
+                <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">title</span>
+                    Contenido del Slide
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="sm:col-span-2">
+                        <label for="titulo" class="block text-xs font-bold text-slate-600 mb-1.5">Título Principal *</label>
+                        <input type="text" id="titulo" name="titulo" required
+                               value="{{ slide.titulo if slide else '' }}"
+                               class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                               placeholder="Ej: Nueva Generación de Laptops Pro">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="subtitulo" class="block text-xs font-bold text-slate-600 mb-1.5">Subtítulo (etiqueta superior)</label>
+                        <input type="text" id="subtitulo" name="subtitulo"
+                               value="{{ slide.subtitulo if slide else '' }}"
+                               class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                               placeholder="Ej: Exclusividad Digital">
+                    </div>
+                    <div class="sm:col-span-2">
+                        <label for="imagen_url" class="block text-xs font-bold text-slate-600 mb-1.5">URL de la Imagen *</label>
+                        <input type="url" id="imagen_url" name="imagen_url" required
+                               value="{{ slide.imagen_url if slide else '' }}"
+                               class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                               placeholder="https://images.unsplash.com/..."
+                               oninput="actualizarPreview()">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón y Enlace -->
+            <div class="bg-white rounded-xl border border-border p-6">
+                <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">smart_button</span>
+                    Botón de Acción
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="texto_boton" class="block text-xs font-bold text-slate-600 mb-1.5">Texto del Botón</label>
+                        <input type="text" id="texto_boton" name="texto_boton"
+                               value="{{ slide.texto_boton if slide else 'Ver Catálogo' }}"
+                               class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                               placeholder="Ver Catálogo">
+                    </div>
+                    <div>
+                        <label for="enlace_boton" class="block text-xs font-bold text-slate-600 mb-1.5">Enlace del Botón</label>
+                        <input type="text" id="enlace_boton" name="enlace_boton"
+                               value="{{ slide.enlace_boton if slide else '/' }}"
+                               class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                               placeholder="/ o /ofertas o /ropa">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuración -->
+            <div class="bg-white rounded-xl border border-border p-6">
+                <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">settings</span>
+                    Configuración
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label for="posicion_texto" class="block text-xs font-bold text-slate-600 mb-1.5">Posición del Texto</label>
+                        <select id="posicion_texto" name="posicion_texto"
+                                class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all">
+                            <option value="izquierda" {% if slide and slide.posicion_texto == 'izquierda' %}selected{% endif %}>Izquierda</option>
+                            <option value="derecha" {% if slide and slide.posicion_texto == 'derecha' %}selected{% endif %}>Derecha</option>
+                            <option value="centro" {% if slide and slide.posicion_texto == 'centro' %}selected{% endif %}>Centro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="orden" class="block text-xs font-bold text-slate-600 mb-1.5">Orden</label>
+                        <input type="number" id="orden" name="orden" min="0"
+                               value="{{ slide.orden if slide else '0' }}"
+                               class="w-full px-4 py-2.5 rounded-lg border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none text-sm transition-all"
+                               placeholder="0">
+                    </div>
+                    <div class="flex items-end">
+                        <label class="flex items-center gap-3 cursor-pointer py-2.5">
+                            <input type="checkbox" id="activo" name="activo" 
+                                   {% if slide and slide.activo %}checked{% elif not slide %}checked{% endif %}
+                                   class="w-5 h-5 rounded border-border text-primary focus:ring-primary/20">
+                            <span class="text-sm font-medium text-slate-700">Slide Activo</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-between pt-2">
+                <a href="{{ url_for('admin.slides') }}" class="text-sm text-slate-500 hover:text-slate-700 font-medium transition-colors">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-primary hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+                    <span class="material-symbols-outlined text-base">save</span>
+                    {% if slide %}Guardar Cambios{% else %}Crear Slide{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview en vivo -->
+    <div>
+        <div class="bg-white rounded-xl border border-border p-4 sticky top-24">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Vista Previa</h3>
+            <div class="aspect-video rounded-lg overflow-hidden bg-slate-100 relative" id="preview-container">
+                <img id="preview-img" 
+                     src="{{ slide.imagen_url if slide else '' }}" 
+                     alt="Preview" 
+                     class="w-full h-full object-cover {% if not slide %}hidden{% endif %}">
+                <div class="absolute inset-0 bg-black/40 flex items-end p-4" id="preview-overlay">
+                    <div>
+                        <p class="text-white/70 text-[9px] uppercase tracking-wider font-bold" id="preview-subtitulo">
+                            {{ slide.subtitulo if slide else 'Subtítulo' }}
+                        </p>
+                        <p class="text-white font-headline font-bold text-xs mt-0.5" id="preview-titulo">
+                            {{ slide.titulo if slide else 'Título del Slide' }}
+                        </p>
+                    </div>
+                </div>
+                <div class="absolute inset-0 flex items-center justify-center {% if slide %}hidden{% endif %}" id="preview-placeholder">
+                    <div class="text-center text-slate-400">
+                        <span class="material-symbols-outlined text-3xl">image</span>
+                        <p class="text-xs mt-1">Ingresa una URL</p>
+                    </div>
+                </div>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-3 leading-relaxed">
+                La vista previa se actualiza en tiempo real al escribir la URL de la imagen y los textos.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function actualizarPreview() {
+        const img = document.getElementById('preview-img');
+        const placeholder = document.getElementById('preview-placeholder');
+        const url = document.getElementById('imagen_url').value;
+        
+        if (url) {
+            img.src = url;
+            img.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+        } else {
+            img.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+        }
+    }
+
+    // Actualizar textos en preview
+    document.getElementById('titulo').addEventListener('input', function() {
+        document.getElementById('preview-titulo').textContent = this.value || 'Título del Slide';
+    });
+    document.getElementById('subtitulo').addEventListener('input', function() {
+        document.getElementById('preview-subtitulo').textContent = this.value || 'Subtítulo';
+    });
+</script>
+{% endblock %}

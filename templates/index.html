@@ -8,38 +8,30 @@
 
 {% if not categoria_activa %}
 <!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- PROMOTIONAL SLIDER (Solo en Home / Todos los productos) -->
+<!-- PROMOTIONAL SLIDER DINÁMICO (Gestionado desde el Admin) -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
+{% if slides %}
 <section class="relative group overflow-hidden bg-on-surface h-96 md:h-[600px]">
-    <div class="flex h-full transition-transform duration-700 ease-in-out overflow-hidden" id="slider">
-        <!-- Slide 1 -->
+    <div class="flex h-full transition-transform duration-700 ease-in-out" id="slider">
+        {% for slide in slides %}
         <div class="min-w-full h-full relative">
-            <img alt="New Arrival Laptops" class="w-full h-full object-cover opacity-80" 
-                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA30YL-762rnLpfu_NwhuUo0NEiwr08VlcxZoRAnCj_09sBn0wObWEVZpEnGZcsJl4Ld60dbgRBjBfJT6kL4EKLa-6CqfikZOuNxXy1QN1knSoLKbcRTLDIkdaIbIp_sTierqzkVql8gKOk-YAIoL0RBvyzy8vXDOEAm3xpB4ZSDyyo-UnY64rOJrU_K52xIolRP2jTb0ul1CYbniFK9bGV1OjRgz_GYNOVgJOPxNryAAS7UE0f_zbf5sEV3FJNOIQ1EqUEzeDXGJM"/>
-            <div class="absolute inset-0 flex flex-col justify-center px-margin-desktop bg-gradient-to-r from-black/80 via-black/40 to-transparent">
-                <span class="text-primary-container font-label-md tracking-widest uppercase mb-4">Exclusividad Digital</span>
-                <h1 class="text-white font-headline-lg text-4xl md:text-5xl leading-tight max-w-xl mb-6">Nueva Generación de Laptops Pro</h1>
-                <a href="{{ url_for('main.index') }}" class="bg-primary-container text-on-primary-container w-fit px-8 py-3 rounded-full font-bold hover:scale-105 transition-all">
-                    Ver Catálogo
+            <img alt="{{ slide.titulo }}" class="w-full h-full object-cover opacity-80" 
+                 src="{{ slide.imagen_url }}"/>
+            <div class="absolute inset-0 flex flex-col justify-center px-margin-desktop {% if slide.posicion_texto == 'derecha' %}items-end text-right bg-gradient-to-l from-black/80 via-black/40 to-transparent{% elif slide.posicion_texto == 'centro' %}items-center text-center bg-black/50{% else %}bg-gradient-to-r from-black/80 via-black/40 to-transparent{% endif %}">
+                {% if slide.subtitulo %}
+                <span class="text-primary-container font-label-md tracking-widest uppercase mb-4">{{ slide.subtitulo }}</span>
+                {% endif %}
+                <h1 class="text-white font-headline-lg text-4xl md:text-5xl leading-tight max-w-xl mb-6">{{ slide.titulo }}</h1>
+                <a href="{{ slide.enlace_boton or url_for('main.index') }}" class="bg-primary-container text-on-primary-container w-fit px-8 py-3 rounded-full font-bold hover:scale-105 transition-all">
+                    {{ slide.texto_boton or 'Ver Catálogo' }}
                 </a>
             </div>
         </div>
-        
-        <!-- Slide 2 -->
-        <div class="min-w-full h-full relative">
-            <img alt="Special Offer Audio" class="w-full h-full object-cover opacity-80"
-                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtKGsfNkJ4SQV26YNDy7XlYLoV_2f0cqlQ17jD-6Dc9CzzTJRmUWHSvzxI3VAw6j8e38NAktBVRxnVt_RozfNUxfU4hmmWYal06Kdl7nJh0hP8E6w7ws19N6UWAGAec1KYZ-UBE5xgGb8Tyv6bUNGRsLdBEsVmgySc-t5OHLPqxQDBQWd18tTQyu6ESbqfyvKIydQfsa0vYXxHalYAZqgw37u8bFU-dAwl1jQSMN9IyRTqxBH1xLevfjozKJSNCRTvaAKikUSLxRA"/>
-            <div class="absolute inset-0 flex flex-col justify-center px-margin-desktop items-end text-right bg-gradient-to-l from-black/80 via-black/40 to-transparent">
-                <span class="text-primary-container font-label-md tracking-widest uppercase mb-4">Oferta de Temporada</span>
-                <h1 class="text-white font-headline-lg text-4xl md:text-5xl leading-tight max-w-xl mb-6">Sonido Premium. Estilo Incomparable.</h1>
-                <a href="{{ url_for('main.index') }}" class="bg-primary-container text-on-primary-container w-fit px-8 py-3 rounded-full font-bold hover:scale-105 transition-all">
-                    Ver Ofertas
-                </a>
-            </div>
-        </div>
+        {% endfor %}
     </div>
     
     <!-- Slider Controls -->
+    {% if slides | length > 1 %}
     <button class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-3 rounded-full transition-all opacity-0 group-hover:opacity-100" id="prevSlide">
         <span class="material-symbols-outlined">chevron_left</span>
     </button>
@@ -49,10 +41,13 @@
     
     <!-- Pagination Dots -->
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
-        <div class="slider-dot active h-2 w-2 rounded-full bg-white/40 transition-all cursor-pointer" data-index="0"></div>
-        <div class="slider-dot h-2 w-2 rounded-full bg-white/40 transition-all cursor-pointer" data-index="1"></div>
+        {% for slide in slides %}
+        <div class="slider-dot {% if loop.first %}active{% endif %} h-2 w-2 rounded-full bg-white/40 transition-all cursor-pointer" data-index="{{ loop.index0 }}"></div>
+        {% endfor %}
     </div>
+    {% endif %}
 </section>
+{% endif %}
 
 <!-- VALUE PROPOSITIONS (Solo en Home) -->
 <section class="bg-surface-variant py-16 border-b border-outline-variant">

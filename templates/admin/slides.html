@@ -1,0 +1,90 @@
+{% extends "admin/base_admin.html" %}
+
+{% block title %}Banner / Slides{% endblock %}
+{% block page_title %}Gestión del Banner Promocional{% endblock %}
+
+{% block content %}
+<!-- Header Actions -->
+<div class="flex items-center justify-between mb-6">
+    <p class="text-sm text-slate-500">{{ slides | length }} slide{{ 's' if slides | length != 1 else '' }} configurado{{ 's' if slides | length != 1 else '' }}</p>
+    <a href="{{ url_for('admin.crear_slide') }}" class="bg-primary hover:bg-indigo-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center gap-2">
+        <span class="material-symbols-outlined text-base">add</span>
+        Nuevo Slide
+    </a>
+</div>
+
+<!-- Slides Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+    {% for slide in slides %}
+    <div class="bg-white rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow {% if not slide.activo %}opacity-60{% endif %}">
+        <!-- Preview de la imagen -->
+        <div class="h-40 relative overflow-hidden bg-slate-100">
+            <img alt="{{ slide.titulo }}" class="w-full h-full object-cover" src="{{ slide.imagen_url }}">
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center {% if slide.posicion_texto == 'derecha' %}justify-end pr-6{% elif slide.posicion_texto == 'centro' %}justify-center{% else %}justify-start pl-6{% endif %}">
+                <div class="{% if slide.posicion_texto == 'derecha' %}text-right{% elif slide.posicion_texto == 'centro' %}text-center{% endif %}">
+                    {% if slide.subtitulo %}
+                    <p class="text-white/70 text-[10px] uppercase tracking-wider font-bold">{{ slide.subtitulo }}</p>
+                    {% endif %}
+                    <p class="text-white font-headline font-bold text-sm mt-1 max-w-[200px]">{{ slide.titulo }}</p>
+                </div>
+            </div>
+            <!-- Badges -->
+            <div class="absolute top-3 right-3 flex gap-2">
+                {% if slide.activo %}
+                <span class="bg-emerald-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Activo</span>
+                {% else %}
+                <span class="bg-slate-400 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Inactivo</span>
+                {% endif %}
+                <span class="bg-white/90 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">#{{ slide.orden }}</span>
+            </div>
+        </div>
+        
+        <!-- Info y acciones -->
+        <div class="p-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-900">{{ slide.titulo }}</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Botón: "{{ slide.texto_boton }}" → {{ slide.enlace_boton }}
+                    </p>
+                    {% if slide.autor_nombre %}
+                    <p class="text-[11px] text-slate-400 mt-1">Creado por {{ slide.autor_nombre }}</p>
+                    {% endif %}
+                </div>
+                <div class="flex items-center gap-1">
+                    <a href="{{ url_for('admin.editar_slide', slide_id=slide.id) }}" 
+                       class="p-2 text-slate-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-all" title="Editar">
+                        <span class="material-symbols-outlined text-base">edit</span>
+                    </a>
+                    <form action="{{ url_for('admin.eliminar_slide', slide_id=slide.id) }}" method="POST" class="inline"
+                          onsubmit="return confirm('¿Eliminar este slide permanentemente?')">
+                        <button type="submit" class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all" title="Eliminar">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-span-full bg-white rounded-xl border border-border p-12 text-center">
+        <span class="material-symbols-outlined text-slate-300 text-5xl mb-3 block">slideshow</span>
+        <p class="text-slate-500 text-sm mb-4">No hay slides configurados para el banner.</p>
+        <a href="{{ url_for('admin.crear_slide') }}" class="text-primary text-sm font-semibold hover:underline">
+            Crear el primer slide
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Info -->
+<div class="mt-6 bg-slate-50 border border-border rounded-xl p-4 flex items-start gap-3">
+    <span class="material-symbols-outlined text-slate-400 text-lg mt-0.5">info</span>
+    <div class="text-xs text-slate-500 leading-relaxed">
+        <p class="font-semibold text-slate-700 mb-1">¿Cómo funciona?</p>
+        <p>Los slides activos se muestran en el banner de la página principal ordenados por el campo "Orden". 
+        Solo se muestran los controles de navegación si hay más de un slide activo. 
+        Puedes usar URLs de imágenes de Unsplash o cualquier enlace directo a una imagen.</p>
+    </div>
+</div>
+{% endblock %}
