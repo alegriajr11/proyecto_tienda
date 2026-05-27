@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from decimal import Decimal
 
 # --- PATRÓN STRATEGY PARA DESCUENTOS ---
 
@@ -14,10 +15,16 @@ class SinDescuento(EstrategiaDescuento):
 
 class DescuentoPorcentaje(EstrategiaDescuento):
     def __init__(self, porcentaje):
-        self.porcentaje = porcentaje
+        # Acepta porcentajes como int, float o Decimal.
+        self.porcentaje = Decimal(str(porcentaje))
     
     def aplicar(self, precio):
-        return precio * (1 - self.porcentaje / 100)
+        if precio is None:
+            return precio
+        if not isinstance(precio, Decimal):
+            precio = Decimal(str(precio))
+        factor = Decimal('1') - (self.porcentaje / Decimal('100'))
+        return precio * factor
 
 # --- CLASES DE PRODUCTO ---
 
