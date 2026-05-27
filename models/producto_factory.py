@@ -1,25 +1,14 @@
-# ¡Hola! Soy el dev junior y he creado esta clase Factory (Factoría) para cumplir con los principios SOLID.
-#
-# ¿Por qué aplicamos SOLID aquí?
-# 1. Single Responsibility Principle (SRP): Esta clase tiene una ÚNICA responsabilidad, que es decidir
-#    e instanciar la clase correcta de Producto según la fila de la base de datos.
-# 2. Open/Closed Principle (OCP): Si mañana creamos una nueva clase como "ServicioDigital" que herede
-#    de Producto, solo tenemos que añadir un "elif" aquí. Los controladores y los repositorios no
-#    necesitan cambiar en absoluto. ¡Es super escalable!
-
-from models.producto import Producto, Electronico, Ropa
+from models.producto import Ropa, Accesorio, Zapato
 
 class ProductoFactory:
     """
     Factoría para la creación polimórfica de objetos derivados de Producto.
-    Mapea las filas de la base de datos a sus clases correspondientes en Python.
+    Actualizada para reflejar las categorías de la tienda: Accesorios, Ropa y Zapatos.
     """
     @staticmethod
     def crear_producto(fila):
-        # Obtenemos la categoría en minúsculas y sin espacios para evitar errores de escritura
         categoria = (fila.get('categoria_nombre') or '').lower().strip()
         
-        # Parámetros comunes de la clase base
         comunes = {
             'id': fila['id'],
             'nombre': fila['nombre'],
@@ -34,25 +23,24 @@ class ProductoFactory:
             'precio_compra': fila.get('precio_compra', 0)
         }
         
-        # Instanciamos la clase hija correcta según la categoría de la base de datos
         if 'ropa' in categoria:
             return Ropa(
                 talla=fila.get('talla', 'M'),
                 **comunes
             )
-        elif 'calzado' in categoria:
-            # Calzado también utiliza tallas, heredando de Ropa para exponer la propiedad talla
-            return Ropa(
+        elif 'calzado' in categoria or 'zapato' in categoria:
+            return Zapato(
                 talla=fila.get('talla', '42'),
                 **comunes
             )
-        elif 'accesorios' in categoria or 'electrónica' in categoria or 'electronica' in categoria:
-            return Electronico(
-                garantia_dias=fila.get('garantia_dias', 365),
+        elif 'accesorios' in categoria:
+            return Accesorio(
+                material=fila.get('material', 'Cuero'),
                 **comunes
             )
         else:
-            # Si no es ninguna categoría especial, devolvemos un producto general
-            return Producto(
+            # Por defecto, si no se reconoce, devolvemos un Accesorio general
+            # Ya que Producto es abstracta y no se puede instanciar.
+            return Accesorio(
                 **comunes
             )

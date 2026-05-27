@@ -1,10 +1,33 @@
-class Producto:
+from abc import ABC, abstractmethod
+
+# --- PATRÓN STRATEGY PARA DESCUENTOS ---
+
+class EstrategiaDescuento(ABC):
+    """Interfaz para las estrategias de descuento."""
+    @abstractmethod
+    def aplicar(self, precio):
+        pass
+
+class SinDescuento(EstrategiaDescuento):
+    def aplicar(self, precio):
+        return precio
+
+class DescuentoPorcentaje(EstrategiaDescuento):
+    def __init__(self, porcentaje):
+        self.porcentaje = porcentaje
+    
+    def aplicar(self, precio):
+        return precio * (1 - self.porcentaje / 100)
+
+# --- CLASES DE PRODUCTO ---
+
+class Producto(ABC):
     """
-    Clase base para todos los productos de la tienda.
-    Demuestra Encapsulamiento (atributos protegidos/privados).
+    Clase base ABSTRACTA para todos los productos de la tienda.
+    Aplica OCP (Open/Closed Principle) al permitir nuevas categorías sin cambiar el código base.
     """
     def __init__(self, id, nombre, precio_venta, descripcion, imagen, stock_actual=0, stock_minimo=0, marca=None, modelo=None, color=None, precio_compra=0):
-        self._id = id             # El guion bajo indica que es un atributo "protegido"
+        self._id = id
         self._nombre = nombre
         self._precio_venta = precio_venta
         self._descripcion = descripcion
@@ -15,8 +38,8 @@ class Producto:
         self._modelo = modelo
         self._color = color
         self._precio_compra = precio_compra
+        self._estrategia_descuento = SinDescuento() # Por defecto sin descuento
 
-    # Getters (Propiedades) para acceder a los atributos encapsulados
     @property
     def id(self): return self._id
     
@@ -24,8 +47,14 @@ class Producto:
     def nombre(self): return self._nombre
     
     @property
-    def precio_venta(self): return self._precio_venta
+    def precio_venta(self): 
+        # Aplicamos la estrategia de descuento al obtener el precio
+        return self._estrategia_descuento.aplicar(self._precio_venta)
     
+    @property
+    def precio_base(self):
+        return self._precio_venta
+
     @property
     def descripcion(self): return self._descripcion
     
@@ -50,39 +79,48 @@ class Producto:
     @property
     def precio_compra(self): return self._precio_compra
 
-    def mostrar_info(self):
-        """Método que será sobrescrito (Polimorfismo) en clases hijas."""
-        return f"Producto: {self._nombre} - ${self._precio_venta}"
+    def establecer_descuento(self, estrategia: EstrategiaDescuento):
+        """Permite cambiar la estrategia de descuento dinámicamente (Strategy Pattern)."""
+        self._estrategia_descuento = estrategia
 
-class Electronico(Producto):
+    @abstractmethod
+    def mostrar_info(self):
+        """Método abstracto que obliga a las clases hijas a implementarlo."""
+        pass
+
+class Accesorio(Producto):
     """
-    Clase que HEREDA de Producto. Representa productos tecnológicos.
+    Clase para accesorios (reemplaza a Electronico para coherencia).
     """
-    def __init__(self, id, nombre, precio_venta, descripcion, imagen, garantia_dias, stock_actual=0, stock_minimo=0, marca=None, modelo=None, color=None, precio_compra=0):
-        # Llamamos al constructor de la clase Padre (Producto)
-        super().__init__(id, nombre, precio_venta, descripcion, imagen, stock_actual, stock_minimo, marca, modelo, color, precio_compra)
-        self._garantia_dias = garantia_dias
+    def __init__(self, id, nombre, precio_venta, descripcion, imagen, material=None, **kwargs):
+        super().__init__(id, nombre, precio_venta, descripcion, imagen, **kwargs)
+        self._material = material
         
     @property
-    def garantia_dias(self): return self._garantia_dias
+    def material(self): return self._material
 
     def mostrar_info(self):
-        """POLIMORFISMO: Comportamiento específico para Electrónicos"""
-        garantia_str = f"{self._garantia_dias} días" if self._garantia_dias else "Sin garantía especificada"
-        return f"[Electrónico] {self._nombre} - Garantía: {garantia_str}"
+        material_str = f"Material: {self._material}" if self._material else "Accesorio general"
+        return f"[Accesorio] {self._nombre} - {material_str}"
 
 class Ropa(Producto):
     """
-    Clase que HEREDA de Producto. Representa prendas de vestir.
+    Clase para prendas de vestir.
     """
-    def __init__(self, id, nombre, precio_venta, descripcion, imagen, talla, stock_actual=0, stock_minimo=0, marca=None, modelo=None, color=None, precio_compra=0):
-        super().__init__(id, nombre, precio_venta, descripcion, imagen, stock_actual, stock_minimo, marca, modelo, color, precio_compra)
+    def __init__(self, id, nombre, precio_venta, descripcion, imagen, talla, **kwargs):
+        super().__init__(id, nombre, precio_venta, descripcion, imagen, **kwargs)
         self._talla = talla
         
     @property
     def talla(self): return self._talla
 
     def mostrar_info(self):
-        """POLIMORFISMO: Comportamiento específico para Ropa"""
         talla_str = self._talla if self._talla else "Estándar"
         return f"[Ropa] {self._nombre} - Talla: {talla_str}"
+
+class Zapato(Ropa):
+    """
+    Clase específica para calzado, hereda de Ropa por la talla pero puede tener lógica propia.
+    """
+    def mostrar_info(self):
+        return f"[Calzado] {self._nombre} - Talla: {self._talla}"

@@ -3,9 +3,9 @@
 {% block title %}{{ producto.nombre }} - TiendaPOO{% endblock %}
 
 {% block content %}
-{% set es_ropa = producto.__class__.__name__ == 'Ropa' and not producto.talla.isdigit() %}
-{% set es_calzado = producto.__class__.__name__ == 'Ropa' and producto.talla.isdigit() %}
-{% set es_electronico = producto.__class__.__name__ == 'Electronico' %}
+{% set es_ropa = producto.__class__.__name__ == 'Ropa' %}
+{% set es_calzado = producto.__class__.__name__ == 'Zapato' %}
+{% set es_accesorio = producto.__class__.__name__ == 'Accesorio' %}
 {% set tiene_oferta = (producto.id % 2 == 0) %}
 {% set descuento = 15 if producto.id == 2 else 20 %}
 
@@ -22,7 +22,7 @@
             <a href="{{ url_for('main.seccion_ropa') }}" class="hover:text-primary transition-colors">Ropa</a>
             {% elif es_calzado %}
             <a href="{{ url_for('main.seccion_calzado') }}" class="hover:text-primary transition-colors">Calzado</a>
-            {% elif es_electronico %}
+            {% elif es_accesorio %}
             <a href="{{ url_for('main.seccion_accesorios') }}" class="hover:text-primary transition-colors">Accesorios</a>
             {% endif %}
             <span class="material-symbols-outlined text-xs">chevron_right</span>
@@ -157,12 +157,12 @@
                         </div>
                         {% endif %}
 
-                        {% if es_electronico %}
+                        {% if es_accesorio %}
                         <div class="flex items-center gap-2">
                             <span class="material-symbols-outlined text-primary text-base">verified_user</span>
                             <div>
                                 <span class="text-[10px] uppercase text-slate-400 font-bold block">Garantía</span>
-                                <span class="text-sm text-slate-800 font-semibold">{{ producto.garantia_dias }} días</span>
+                                <span class="text-sm text-slate-800 font-semibold">365 días</span>
                             </div>
                         </div>
                         {% endif %}
@@ -215,7 +215,7 @@
                     <div class="flex flex-col items-center text-center p-3 bg-slate-50 rounded-xl">
                         <span class="material-symbols-outlined text-primary text-xl mb-1">verified</span>
                         <span class="text-[10px] font-bold text-slate-600 uppercase">Garantía</span>
-                        <span class="text-[9px] text-slate-400">{% if es_electronico %}{{ producto.garantia_dias }} días{% else %}365 días{% endif %}</span>
+                        <span class="text-[9px] text-slate-400">365 días</span>
                     </div>
                     <div class="flex flex-col items-center text-center p-3 bg-slate-50 rounded-xl">
                         <span class="material-symbols-outlined text-primary text-xl mb-1">undo</span>

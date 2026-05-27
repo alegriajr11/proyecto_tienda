@@ -209,8 +209,9 @@
         <!-- Product Grid (Responsive: Desktop 3 cols, Tablet 2 cols, Mobile 1 col - SOLID UX) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for producto in productos %}
-            {% set es_ropa = producto.__class__.__name__ == 'Ropa' and not producto.talla.isdigit() %}
-            {% set es_calzado = producto.__class__.__name__ == 'Ropa' and producto.talla.isdigit() %}
+            {% set es_ropa = producto.__class__.__name__ == 'Ropa' %}
+            {% set es_calzado = producto.__class__.__name__ == 'Zapato' %}
+            {% set es_accesorio = producto.__class__.__name__ == 'Accesorio' %}
             {% set tiene_oferta = (producto.id % 2 == 0) %}
             {% set descuento = 15 if producto.id == 2 else 20 %}
             
@@ -354,7 +355,7 @@
                         </span>
                         <span class="bg-slate-50 text-slate-600 border border-slate-200 text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 select-none">
                             <span class="material-symbols-outlined text-xs">verified</span>
-                            {% if producto.__class__.__name__ == 'Electronico' %}Garantía {{ producto.garantia_dias }} días{% else %}Garantía 365 días{% endif %}
+                            Garantía 365 días
                         </span>
                     </div>
 
